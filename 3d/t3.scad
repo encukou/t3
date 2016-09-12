@@ -52,6 +52,21 @@ module wire_paths (h) {
     }
 }
 
+module button (h, minus) {
+    translate ([-minus, -minus, 0]) cube ([6+minus*2, 6+minus*2, h]);
+}
+
+module buttons (h=3, minus=0) {
+    // Cross
+    translate ([-38, -3, 0]) button (h, minus);
+    translate ([-23, -3, 0]) button (h, minus);
+    translate ([-30.5, -10.5, 0]) button (h, minus);
+    translate ([-30.5, 4.5, 0]) button (h, minus);
+    // AB
+    translate ([20, -4, 0]) button (h, minus);
+    translate ([29, -2, 0]) button (h, minus);
+}
+
 module t3_base () {
     union () {
         difference () {
@@ -112,18 +127,16 @@ module t3_top () {
         difference () {
             union () {
                 difference () {
-                    main_octagon (2);
+                    main_octagon (3);
                     translate ([0, 0, 1]) main_octagon (100, 1);
                 }
-                translate ([-27-11/2-1, -11/2-1, 0]) cube ([11+2, 11+2, 2]);
-                translate ([27-8/2-1, -8/2-1, 0]) cube ([8+2, 8+2, 2]);
-                translate ([-15-1, -15-1, 0]) cube ([30+2, 30+2, 2]);
                 screw_mod (2);
+                translate ([-15-1, -15-1, 0]) cube ([30+2, 30+2, 2]);
+                buttons (3, 1);
             }
             screw_holes ();
             translate ([-15, -15, -1]) cube ([30, 30, 100]);
-            translate ([-27-11/2, -11/2, -1]) cube ([11, 11, 100]);
-            translate ([27-8/2, -8/2, -1]) cube ([8, 8, 100]);
+            translate ([0, 0, -1]) buttons (100, 0.25);
         }
     }
 }
@@ -141,6 +154,8 @@ module extra_parts () {
     translate ([0, 27, 0]) cylinder (7, d=14);
     // Headers
     translate ([28, -3*5/2, 1+eps]) cube ([12, 3*5, 3]);
+    // Buttons
+    translate ([0, 0, 9]) buttons ();
 }
 
 % extra_parts ();
