@@ -36,8 +36,8 @@ module wall_adjust (n) {
     h = 1+3*n;
     difference () {
         intersection () {
-            translate ([-24, -105, h]) cube ([50-2, 100, 100]);
-            translate ([0, 10, 0]) rotate ([0, 0, -135]) cube ([100, 100, 100]);
+            translate ([-24, -115, h]) cube ([50-2, 100, 100]);
+            translate ([0, 5, 0]) rotate ([0, 0, -135]) cube ([100, 100, 100]);
         }
     }
 }
@@ -79,7 +79,7 @@ module t3_base () {
                 main_octagon (1);
                 // Perimeter Wall
                 difference () {
-                        the_wall (9, 0);
+                    the_wall (9, 0);
                     the_wall (100, 1);
                 }
                 // Speaker wall
@@ -92,8 +92,13 @@ module t3_base () {
                 rotate ([0, 0, 45]) translate ([24, -22, 1+eps]) cube ([3, 22, 4]);
             }
             // Speaker hole
-            translate ([0, 27, 1]) cylinder (100, d=15.5);
-            translate ([0, 27, -1]) cylinder (100, d=5, $fn=10);
+            translate ([0, 27, 0]) {
+                translate ([0, 0, 1]) cylinder (100, d=15.5);
+                translate ([0, 0, -1]) cylinder (100, d=5, $fn=10);
+                for (i=[0:8]) rotate([0, 0, 360/8*i]) {
+                    translate ([5, 0, -1]) cylinder (100, d=1.5, $fn=10);
+                }
+            }
             // Wire paths
             translate ([0, 0, 0.25]) wire_paths (0.751);
             // Small Wall Adjustment
@@ -116,17 +121,7 @@ module t3_battery_cover () {
                 wall_adjust (-1);
             }
             screw_holes ();
-            translate ([0, -1, 1]) wire_paths (1);
-            // Capacitor Hole
-            translate ([5, -13.5, -2]) cube ([12.5, 5, 5]);
-            // Wire to Cap
-            translate ([0, -11.5, 1]) cube ([10, 1, 1]);
-            // Diode Hole
-            translate ([-13, -12.5, -2]) cube ([7, 3, 5]);
-            // Wire from Diode
-            translate ([-16, -11.5, -0.75]) cube ([5, 1, 2]);
-            // Hole Out
-            translate ([-16, -11, -2]) cylinder (5, r=1, $fn=10);
+            translate ([-0.5, -35, 1]) cube ([1, 100, 100]);
         }
     }
 }
@@ -139,8 +134,8 @@ module t3_top () {
                     main_octagon (3);
                     translate ([0, 0, 1]) main_octagon (100, 1);
                 }
-                screw_mod (2);
-                translate ([-15-1, -15-1, 0]) cube ([30+2, 30+2, 2]);
+                screw_mod (3);
+                translate ([-15-1, -15-1, 0]) cube ([30+2, 30+2, 3]);
                 buttons (2, 1);
             }
             screw_holes ();
@@ -165,6 +160,15 @@ module extra_parts () {
     headers ();
     // Buttons
     translate ([0, 0, 9]) buttons ();
+    // Screen
+    translate ([0, 0, 9]) {
+        for (x=[-1,0,1]) for (y=[-1,0,1]) {
+            translate ([x*9, y*9, 0]) {
+                cylinder (1, d=9);
+                translate ([-2.5, -2.5, 0]) cube ([5, 5, 2.5]);
+            }
+        }
+    }
 }
 
 % extra_parts ();
