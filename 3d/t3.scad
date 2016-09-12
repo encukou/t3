@@ -47,6 +47,20 @@ module buttons (h=3, minus=0) {
     translate ([29, -2, 0]) button (h, minus);
 }
 
+module t3_battery_holder () {
+    n=2;
+    difference () {
+        intersection () {
+            main_octagon (6-0.2);
+            union () {
+                translate ([-15+0.1, -15+30+0.1, -1]) cube ([30-0.2, 30, 100]);
+                translate ([-40, -15+45, -1]) cube ([80, 30, 100]);
+            }
+        }
+        translate ([0, 25, -1]) cylinder (100, d=20+1);
+    }
+}
+
 module headers (n=5) {
     rotate ([0, 0, 45]) translate ([23, -3*n-3, 1+eps]) cube ([12, 3*n, 3]);
 }
@@ -98,6 +112,8 @@ module t3_base () {
             translate ([0, 0, -1]) screw_mod (100, SCREW_R);
             // Header Holes
             headers (5);
+            // Fun Holes
+            translate ([0, 0, -1]) buttons(5, -2.5);
         }
     }
 }
@@ -164,6 +180,7 @@ union () {
     translate ([0, 0, 0]) t3_base ();
     translate ([70, 0, 0]) t3_battery_cover ();
     translate ([70, 20, 0]) t3_display_holder ();
+    translate ([70, 40, 0]) t3_battery_holder ();
     translate ([0, 85, 0]) scale ([-1, 1, 1]) t3_top ();
 }
 
