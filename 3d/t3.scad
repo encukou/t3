@@ -64,12 +64,12 @@ module t3_base () {
                     the_wall (100, 1);
                 }
                 // Speaker wall
-                translate ([-27, 0, 0]) cylinder (8, d=16);
+                translate ([0, 27, 0]) cylinder (8, d=16);
                 // Screw Base
                 screw_mod (7);
             }
             // Speaker hole
-            translate ([-27, 0, -1]) cylinder (100, d=14.25);
+            translate ([0, 27, -1]) cylinder (100, d=14.25);
             // Wire paths
             translate ([0, 0, 0.25]) wire_paths (0.751);
             // Small Wall Adjustment
@@ -99,10 +99,6 @@ module t3_battery_cover (n) {
     }
 }
 
-module magnet_hole () {
-    translate ([0, 27, -1]) cylinder (100, r=7);
-}
-
 module t3_top () {
     union () {
         difference () {
@@ -120,7 +116,6 @@ module t3_top () {
             translate ([-15, -15, -1]) cube ([30, 30, 100]);
             translate ([-27-11/2, -11/2, -1]) cube ([11, 11, 100]);
             translate ([27-8/2, -8/2, -1]) cube ([8, 8, 100]);
-            magnet_hole ();
         }
     }
 }
