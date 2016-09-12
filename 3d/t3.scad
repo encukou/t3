@@ -77,11 +77,14 @@ module t3_base () {
                     the_wall (100, 1);
                 }
                 // Speaker wall
-                translate ([0, 27, 0]) cylinder (8, d=17);
+                translate ([0, 27, 0]) cylinder (9, d=18);
                 // Screw Base
                 screw_mod (7);
                 // Button Supports
                 buttons(9);
+                // Switch Support
+                translate ([-7, 35, 0]) cube ([3, 4, 9]);
+                translate ([4, 35, 0]) cube ([3, 4, 9]);
                 // Header Support
                 rotate ([0, 0, 45]) translate ([24, -22, 1+eps]) cube ([3, 22, 4]);
                 // Battery Support
@@ -114,6 +117,9 @@ module t3_base () {
             headers (5);
             // Fun Holes
             translate ([0, 0, -1]) buttons(5, -2.5);
+            // Switch Support
+            translate ([-5, 35, 12-5]) cube ([10, 3, 100]);
+            translate ([-10, 37, 4]) rotate ([0, 90, 0]) cylinder (20, d=2, $fn=10);
         }
     }
 }
@@ -143,12 +149,20 @@ module t3_top () {
                     translate ([0, 0, 1]) main_octagon (100, 1);
                 }
                 screw_mod (3);
+                // Screen Hole Wall
                 translate ([-15-1, -15-1, 0]) cube ([30+2, 30+2, 3]);
+                // Button Hole Walls
                 buttons (2, 1);
+                // Switch Hole Wall
+                translate ([-5-1, 33.5-1, 0]) cube ([10+2, 3+2, 3]);
             }
             screw_holes ();
+            // Screen Hole
             translate ([-15, -15, -1]) cube ([30, 30, 100]);
+            // Button Holes
             translate ([0, 0, -1]) buttons (100, 0.25);
+            // Switch Hole
+            translate ([-5, 33.5, -1]) cube ([10, 3, 100]);
         }
     }
 }
