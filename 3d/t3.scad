@@ -36,8 +36,8 @@ module wall_adjust (n) {
     h = 1+3*n;
     difference () {
         intersection () {
-            translate ([-24, -102, h]) cube ([50-2, 100, 100]);
-            translate ([0, 15, 0]) rotate ([0, 0, -135]) cube ([100, 100, 100]);
+            translate ([-24, -105, h]) cube ([50-2, 100, 100]);
+            translate ([0, 10, 0]) rotate ([0, 0, -135]) cube ([100, 100, 100]);
         }
     }
 }
@@ -64,7 +64,7 @@ module t3_base () {
                     the_wall (100, 1);
                 }
                 // Speaker wall
-                translate ([0, 27, 0]) cylinder (8, d=17);
+                translate ([0, 27, 0]) cylinder (7, d=17);
                 // Screw Base
                 screw_mod (7);
             }
@@ -76,13 +76,13 @@ module t3_base () {
             wall_adjust (2);
             // Screw Holes
             translate ([0, 0, -1]) screw_holes ();
-            // Pin Holes
-            translate ([30, -3*5/2, 1+eps]) cube ([100, 3*5, 3]);
+            // Header Holes
+            translate ([28, -3*5/2, 1+eps]) cube ([100, 3*5, 3]);
         }
     }
 }
 
-module t3_battery_cover (n) {
+module t3_battery_cover () {
     union () {
         difference () {
             intersection () {
@@ -92,9 +92,17 @@ module t3_battery_cover (n) {
                 wall_adjust (-1);
             }
             screw_holes ();
-            translate ([0, 0, 1]) wire_paths (1);
-            translate ([5, -4-5, -2]) cube ([12.5, 5, 5]);
-            translate ([4, -6-1, 1]) cube ([5, 1, 1]);
+            translate ([0, -1, 1]) wire_paths (1);
+            // Capacitor Hole
+            translate ([5, -13.5, -2]) cube ([12.5, 5, 5]);
+            // Wire to Cap
+            translate ([0, -11.5, 1]) cube ([10, 1, 1]);
+            // Diode Hole
+            translate ([-13, -12.5, -2]) cube ([7, 3, 5]);
+            // Wire from Diode
+            translate ([-16, -11.5, -0.75]) cube ([5, 1, 2]);
+            // Hole Out
+            translate ([-16, -11, -2]) cylinder (5, r=1, $fn=10);
         }
     }
 }
@@ -122,6 +130,17 @@ module t3_top () {
 
 union () {
     translate ([0, 0, 0]) t3_base ();
-    translate ([70, 0, 0]) t3_battery_cover (2);
+    translate ([70, 0, 0]) t3_battery_cover ();
     translate ([0, 85, 0]) scale ([-1, 1, 1]) t3_top (1);
 }
+
+module extra_parts () {
+    // Bat cover
+    translate ([0, 0, 9]) rotate ([0, 180, 0]) t3_battery_cover ();
+    // Speaker
+    translate ([0, 27, 0]) cylinder (7, d=14);
+    // Headers
+    translate ([28, -3*5/2, 1+eps]) cube ([12, 3*5, 3]);
+}
+
+% extra_parts ();
