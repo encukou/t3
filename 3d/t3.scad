@@ -29,7 +29,7 @@ module screw_mod (h, r=3) {
 }
 
 module screw_holes () {
-    translate ([0, 0, -100]) screw_mod (200, SCREW_R);
+    translate ([0, 0, -100]) screw_mod (200, 1.75);
 }
 
 module wall_adjust (n) {
@@ -90,7 +90,7 @@ module t3_base () {
             // Small Wall Adjustment
             wall_adjust (2);
             // Screw Holes
-            translate ([0, 0, -1]) screw_holes ();
+            translate ([0, 0, -1]) screw_mod (100, SCREW_R);
             // Header Holes
             translate ([28, -3*5/2, 1+eps]) cube ([100, 3*5, 3]);
         }
