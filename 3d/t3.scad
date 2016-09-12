@@ -67,6 +67,10 @@ module buttons (h=3, minus=0) {
     translate ([29, -2, 0]) button (h, minus);
 }
 
+module headers (n=5) {
+    rotate ([0, 0, 45]) translate ([23, -3*n-3, 1+eps]) cube ([12, 3*n, 3]);
+}
+
 module t3_base () {
     union () {
         difference () {
@@ -79,12 +83,17 @@ module t3_base () {
                     the_wall (100, 1);
                 }
                 // Speaker wall
-                translate ([0, 27, 0]) cylinder (7, d=17);
+                translate ([0, 27, 0]) cylinder (8, d=17);
                 // Screw Base
-                screw_mod (7);
+                screw_mod (9);
+                // Button Supports
+                buttons(9);
+                // Header Support
+                rotate ([0, 0, 45]) translate ([24, -22, 1+eps]) cube ([3, 22, 4]);
             }
             // Speaker hole
-            translate ([0, 27, -1]) cylinder (100, d=15.5);
+            translate ([0, 27, 1]) cylinder (100, d=15.5);
+            translate ([0, 27, -1]) cylinder (100, d=5, $fn=10);
             // Wire paths
             translate ([0, 0, 0.25]) wire_paths (0.751);
             // Small Wall Adjustment
@@ -92,7 +101,7 @@ module t3_base () {
             // Screw Holes
             translate ([0, 0, -1]) screw_mod (100, SCREW_R);
             // Header Holes
-            translate ([28, -3*5/2, 1+eps]) cube ([100, 3*5, 3]);
+            headers (5);
         }
     }
 }
@@ -132,7 +141,7 @@ module t3_top () {
                 }
                 screw_mod (2);
                 translate ([-15-1, -15-1, 0]) cube ([30+2, 30+2, 2]);
-                buttons (3, 1);
+                buttons (2, 1);
             }
             screw_holes ();
             translate ([-15, -15, -1]) cube ([30, 30, 100]);
@@ -151,9 +160,9 @@ module extra_parts () {
     // Bat cover
     translate ([0, 0, 9]) rotate ([0, 180, 0]) t3_battery_cover ();
     // Speaker
-    translate ([0, 27, 0]) cylinder (7, d=14);
+    translate ([0, 27, 1]) cylinder (7, d=14);
     // Headers
-    translate ([28, -3*5/2, 1+eps]) cube ([12, 3*5, 3]);
+    headers ();
     // Buttons
     translate ([0, 0, 9]) buttons ();
 }
