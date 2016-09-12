@@ -64,12 +64,12 @@ module t3_base () {
                     the_wall (100, 1);
                 }
                 // Speaker wall
-                translate ([0, 27, 0]) cylinder (8, d=16);
+                translate ([0, 27, 0]) cylinder (8, d=17);
                 // Screw Base
                 screw_mod (7);
             }
             // Speaker hole
-            translate ([0, 27, -1]) cylinder (100, d=14.25);
+            translate ([0, 27, -1]) cylinder (100, d=15.5);
             // Wire paths
             translate ([0, 0, 0.25]) wire_paths (0.751);
             // Small Wall Adjustment
