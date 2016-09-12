@@ -32,16 +32,6 @@ module screw_holes () {
     translate ([0, 0, -100]) screw_mod (200, 1.75);
 }
 
-module wire_paths (h) {
-    union () {
-        for (s=[-1, 1]) {
-            translate ([-0.5+4*s, -35, 0]) cube ([1, 35, h]);
-            translate([0, -10, 0]) rotate ([0, 0, 45*s])
-                translate ([-6, -0.5, 0]) cube ([12, 1, h]);
-        }
-    }
-}
-
 module button (h, minus) {
     translate ([-minus, -minus, 0]) cube ([6+minus*2, 6+minus*2, h]);
 }
@@ -80,6 +70,14 @@ module t3_base () {
                 buttons(9);
                 // Header Support
                 rotate ([0, 0, 45]) translate ([24, -22, 1+eps]) cube ([3, 22, 4]);
+                // Battery Support
+                intersection () {
+                    main_octagon (2);
+                    union () {
+                        translate ([-100, -40, 0]) cube ([200, 15, 2]);
+                        translate ([-15, -40, 0]) cube ([30, 25, 2]);
+                    }
+                }
             }
             // Speaker hole
             translate ([0, 27, 0]) {
@@ -90,9 +88,12 @@ module t3_base () {
                 }
             }
             // Wire paths
-            translate ([0, 0, 0.25]) wire_paths (0.751);
+            translate ([0, 0, 1.01]) {
+                translate ([ 4-0.5, -35, 0]) cube ([1, 35, 1]);
+                translate ([-4-0.5, -35, 0]) cube ([1, 35, 1]);
+            }
             // Small Wall Adjustment
-            translate ([-24, -110, 7]) cube ([50-2, 100, 100]);
+            translate ([-24, -110, 8]) cube ([50-2, 100, 100]);
             // Screw Holes
             translate ([0, 0, -1]) screw_mod (100, SCREW_R);
             // Header Holes
@@ -106,14 +107,13 @@ module t3_battery_cover () {
         difference () {
             intersection () {
                 union () {
-                    main_octagon (2-eps);
+                    main_octagon (1-eps);
                 }
                 translate ([-24, -115, -1]) cube ([50-2, 100, 100]);
                 translate ([0, 5, 0]) rotate ([0, 0, -135]) cube ([100, 100, 100]);
             }
             screw_holes ();
-            translate ([-0.5, -35, 1]) cube ([1, 100, 100]);
-            translate ([0, 0, 1]) the_wall (9, 1);
+            translate ([-0.5, -35, 0.5]) cube ([1, 100, 100]);
         }
     }
 }
@@ -141,11 +141,11 @@ module t3_display_holder () {
     union () {
         difference () {
             union () {
-                translate ([-16, -16, 0]) cube ([32, 32, 2]);
+                translate ([-16, -15, 0]) cube ([32, 31, 2]);
                 for (x=[-1,1]) for (y=[-1,1]) scale([x, y, 1]) {
                     translate ([20, 20, 0]) cylinder (1, r=4);
-                    translate ([16, 16, 0]) cube ([8, 4, 1]);
-                    translate ([24, 16, 0]) rotate ([0, 0, 45])
+                    translate ([16, 15, 0]) cube ([8, 4, 1]);
+                    translate ([24, 15, 0]) rotate ([0, 0, 45])
                         translate ([-20, 0, 0]) cube ([20, 4*sqrt(2), 1]);
                 }
             }
@@ -169,7 +169,7 @@ union () {
 
 module extra_parts () {
     // Bat cover
-    //translate ([0, 0, 9]) rotate ([0, 180, 0]) t3_battery_cover ();
+    translate ([0, 0, 9]) rotate ([0, 180, 0]) t3_battery_cover ();
     // Speaker
     translate ([0, 27, 1]) cylinder (7, d=14);
     // Headers
@@ -179,7 +179,7 @@ module extra_parts () {
     // Screen Holder
     translate ([0, 0, 7]) t3_display_holder ();
     // Screen
-    translate ([0, 0, 9]) {
+    translate ([0, 0, 8]) {
         for (x=[-1,0,1]) for (y=[-1,0,1]) {
             translate ([x*9, y*9, 0]) {
                 cylinder (1, d=9);
