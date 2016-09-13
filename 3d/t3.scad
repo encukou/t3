@@ -130,9 +130,9 @@ module t3_battery_cover () {
         difference () {
             intersection () {
                 union () {
-                    main_octagon (1-eps);
+                    main_octagon (1);
                 }
-                translate ([-24, -115, -1]) cube ([50-2, 100, 100]);
+                translate ([-25+1.5, -115, -1]) cube ([50-3, 100, 100]);
                 translate ([0, 5, 0]) rotate ([0, 0, -135]) cube ([100, 100, 100]);
             }
             screw_holes ();
