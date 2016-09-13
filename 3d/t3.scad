@@ -38,13 +38,12 @@ module button (h, minus) {
 
 module buttons (h=3, minus=0) {
     // Cross
-    translate ([-38, -3, 0]) button (h, minus);
-    translate ([-23, -3, 0]) button (h, minus);
-    translate ([-30.5, -10.5, 0]) button (h, minus);
-    translate ([-30.5, 4.5, 0]) button (h, minus);
+    translate ([-27.5, 0, 0]) for (r=[0:90:360-1]) {
+        rotate ([0, 0, r]) translate ([0, 2, 0]) rotate ([0, 0, 45]) button (h, minus);
+    }
     // AB
-    translate ([20, -4, 0]) button (h, minus);
-    translate ([29, -2, 0]) button (h, minus);
+    translate ([20-1, -2, 0]) rotate ([0, 0, -45]) button (h, minus);
+    translate ([35+1, 2, 0]) rotate ([0, 0, 90+45]) button (h, minus);
 }
 
 module switch (h=7, minus=0) {
@@ -89,7 +88,7 @@ module t3_base () {
                 // Switch Support
                 translate ([-7, 37.5, 0]) cube ([14, 2, 9]);
                 // Header Support
-                rotate ([0, 0, 45]) translate ([24, -22, 1+eps]) cube ([3, 22, 4]);
+                rotate ([0, 0, 45]) translate ([23.5, -22, 1+eps]) cube ([3, 22, 4]);
                 // Battery Support
                 intersection () {
                     main_octagon (2);
@@ -119,7 +118,7 @@ module t3_base () {
             // Header Holes
             headers (5);
             // Fun Holes
-            translate ([0, 0, -1]) buttons(5, -2.5);
+            translate ([0, 0, -1]) buttons(2, -2.5);
             // Switch Support
             translate ([0, 0, 6.5]) switch(100, 0.5);
         }
