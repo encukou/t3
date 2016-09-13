@@ -171,21 +171,21 @@ module t3_display_holder () {
     union () {
         difference () {
             union () {
-                translate ([-16, -15, 0]) cube ([32, 31, 2]);
+                translate ([-16, -14, 0]) cube ([32, 30, 2]);
                 for (x=[-1,1]) for (y=[-1,1]) scale([x, y, 1]) {
-                    translate ([20, 20, 0]) cylinder (1, r=4);
-                    translate ([16, 15, 0]) cube ([8, 4, 1]);
-                    translate ([24, 15, 0]) rotate ([0, 0, 45])
+                    translate ([20, 20, 0]) cylinder (1, r=4, $fn=10);
+                    translate ([16, 14, 0]) cube ([8, 6, 1]);
+                    translate ([24, 14, 0]) rotate ([0, 0, 45])
                         translate ([-20, 0, 0]) cube ([20, 4*sqrt(2), 1]);
                 }
             }
             for (x=[-1,0,1]) for (y=[-1,0,1]) {
-                translate ([9*x, 9*y, -1]) cylinder (4, r=5.5);
+                translate ([9.3*x, 9.3*y, -1]) cylinder (4, r=5.5);
             }
             screw_holes ();
         }
         for (y=[-3,-1,1,3]) {
-            translate ([-15, 4.5*y-1, 0]) cube ([30, 2, 1]);
+            translate ([-15, 4.5*y-0.5, 0]) cube ([30, 1, 1]);
         }
     }
 }
