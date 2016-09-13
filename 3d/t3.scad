@@ -47,6 +47,10 @@ module buttons (h=3, minus=0) {
     translate ([29, -2, 0]) button (h, minus);
 }
 
+module switch (h=7, minus=0) {
+    translate ([-5-minus, 35-minus, 0]) cube ([10+minus*2, 3+minus*2, h]);
+}
+
 module t3_battery_holder () {
     n=2;
     difference () {
@@ -83,8 +87,7 @@ module t3_base () {
                 // Button Supports
                 buttons(9);
                 // Switch Support
-                translate ([-7, 35, 0]) cube ([3, 4, 9]);
-                translate ([4, 35, 0]) cube ([3, 4, 9]);
+                translate ([-7, 37.5, 0]) cube ([14, 2, 9]);
                 // Header Support
                 rotate ([0, 0, 45]) translate ([24, -22, 1+eps]) cube ([3, 22, 4]);
                 // Battery Support
@@ -118,8 +121,7 @@ module t3_base () {
             // Fun Holes
             translate ([0, 0, -1]) buttons(5, -2.5);
             // Switch Support
-            translate ([-5, 35, 12-5]) cube ([10, 3, 100]);
-            translate ([-10, 37, 4]) rotate ([0, 90, 0]) cylinder (20, d=2, $fn=10);
+            translate ([0, 0, 6.5]) switch(100, 0.5);
         }
     }
 }
@@ -154,7 +156,7 @@ module t3_top () {
                 // Button Hole Walls
                 buttons (2, 1.5);
                 // Switch Hole Wall
-                translate ([-5-1, 33.5-1, 0]) cube ([10+2, 3+2, 3]);
+                translate ([0, 0, 0]) switch(3, 2);
             }
             screw_holes ();
             // Screen Hole
@@ -162,7 +164,7 @@ module t3_top () {
             // Button Holes
             translate ([0, 0, -1]) buttons (100, 0.25);
             // Switch Hole
-            translate ([-5, 33.5, -1]) cube ([10, 3, 100]);
+            translate ([0, 0, -1]) switch(100, 0.5);
         }
     }
 }
@@ -218,6 +220,8 @@ module extra_parts () {
             }
         }
     }
+    // Switch
+    translate ([0, 0, 7]) switch(5);
 }
 
 % extra_parts ();
