@@ -29,7 +29,7 @@ module screw_mod (h, r=3) {
 }
 
 module screw_holes () {
-    translate ([0, 0, -100]) screw_mod (200, 2);
+    translate ([0, 0, -100]) screw_mod (200, 1.9);
 }
 
 module button (h, minus) {
