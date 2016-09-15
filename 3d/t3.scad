@@ -47,7 +47,7 @@ module buttons (h=3, minus=0) {
 }
 
 module switch (h=7, minus=0) {
-    translate ([-5-minus, 35-minus, 0]) cube ([10+minus*2, 3+minus*2, h]);
+    translate ([-5-minus, 35-minus, 0]) cube ([10+minus*2, 2.5+minus*2, h]);
 }
 
 module t3_battery_holder () {
@@ -86,7 +86,7 @@ module t3_base () {
                 // Button Supports
                 buttons(9);
                 // Switch Support
-                translate ([-7, 37.5, 0]) cube ([14, 2, 9]);
+                translate ([-7, 37.25, 0]) cube ([14, 2, 9]);
                 // Header Support
                 rotate ([0, 0, 45]) translate ([23.5, -22, 1+eps]) cube ([3, 22, 4]);
                 // Battery Support
@@ -170,7 +170,7 @@ module t3_top () {
             // Button Holes
             translate ([0, 0, -1]) buttons (100, 0.4);
             // Switch Hole
-            translate ([0, 0, -1]) switch(100, 0.5);
+            translate ([0, 0, -1]) switch(100, 0.4);
         }
     }
 }
