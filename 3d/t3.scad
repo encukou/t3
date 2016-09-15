@@ -168,7 +168,7 @@ module t3_top () {
             // Screen Hole
             translate ([-15, -15, -1]) cube ([30, 30, 100]);
             // Button Holes
-            translate ([0, 0, -1]) buttons (100, 0.25);
+            translate ([0, 0, -1]) buttons (100, 0.4);
             // Switch Hole
             translate ([0, 0, -1]) switch(100, 0.5);
         }
