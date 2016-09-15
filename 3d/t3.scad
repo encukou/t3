@@ -112,9 +112,8 @@ module t3_base () {
                 }
             }
             // Wire paths
-            translate ([0, 0, 1.01]) {
-                translate ([ 4-0.5, -35, 0]) cube ([1, 22, 1]);
-                translate ([-4-0.5, -35, 0]) cube ([1, 22, 1]);
+            for (x=[-4, 4]) translate ([x, 0, 1.01]) {
+                translate ([-0.5, -35, 0]) cube ([1, 22, 1]);
             }
             // Small Wall Adjustment
             translate ([-24, -110, 8]) cube ([50-2, 100, 100]);
@@ -143,7 +142,10 @@ module t3_battery_cover () {
                 translate ([0, 5, 0]) rotate ([0, 0, -135]) cube ([100, 100, 100]);
             }
             screw_holes ();
-            translate ([-0.5, -35, 0.5]) cube ([1, 100, 100]);
+            for (x=[-3, 3]) translate ([x, 0, 0]) {
+                translate ([-0.5, -35, 0.5]) cube ([1, 100, 100]);
+                translate ([-0.5, -16, -1]) cube ([1, 100, 100]);
+            }
         }
     }
 }
