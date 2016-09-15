@@ -181,7 +181,7 @@ module t3_display_holder () {
     union () {
         difference () {
             union () {
-                translate ([-16, -14, 0]) cube ([32, 30, 2]);
+                translate ([-16.5, -14, 0]) cube ([33, 30, 2]);
                 for (x=[-1,1]) for (y=[-1,1]) scale([x, y, 1]) {
                     translate ([20, 20, 0]) cylinder (1, r=4, $fn=10);
                     translate ([16, 14, 0]) cube ([8, 6, 1]);
@@ -190,12 +190,19 @@ module t3_display_holder () {
                 }
             }
             for (x=[-1,0,1]) for (y=[-1,0,1]) {
-                translate ([9.3*x, 9.3*y, -1]) cylinder (4, r=5.5);
+                translate ([9.5*x, 9.5*y, -1]) cylinder (4, r=5.5);
+            }
+            translate ([0, 0, -0.01]) {
+                translate ([-15, -9.5, 0]) cube ([30, 19, 100]);
+                translate ([0, -15, 0]) cube ([9.5, 19, 100]);
+                translate ([-9.5, 0, 0]) cube ([9.5, 15, 100]);
             }
             screw_holes ();
         }
-        for (y=[-3,-1,1,3]) {
-            translate ([-15, 4.5*y-0.5, 0]) cube ([30, 1, 1]);
+        for (yw=[[-3,1], [-1,1], [1,1], [3,2]]) {
+            y = yw[0];
+            w = yw[1];
+            translate ([-15, 4.5*y-0.5, 0]) cube ([30, w, 1]);
         }
     }
 }
@@ -222,8 +229,8 @@ module extra_parts () {
     // Screen
     translate ([0, 0, 8]) {
         for (x=[-1,0,1]) for (y=[-1,0,1]) {
-            translate ([x*9, y*9, 0]) {
-                cylinder (1, d=9);
+            translate ([x*9.5, y*9.5, 0]) color ([1, 1, 1, 0.25]) {
+                cylinder (1, d=9.5);
                 translate ([-2.5, -2.5, 0]) cube ([5, 5, 2.5]);
             }
         }
