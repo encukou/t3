@@ -102,6 +102,8 @@ module t3_base () {
                 translate ([11, -5, 0]) cube ([3, 4, 3]);
                 translate ([-14, 9, 0]) cube ([4, 4, 3]);
                 translate ([11, 11, 0]) cube ([4, 4, 3]);
+                // Magnet Support
+                translate ([0, -12, 1+5/2]) rotate ([90, 0, 0]) cylinder (3-0.1, d=6, $fn=10);
             }
             // Speaker hole
             translate ([0, 27, 0]) {
@@ -111,10 +113,12 @@ module t3_base () {
                     translate ([5, 0, -1]) cylinder (100, d=1.5, $fn=10);
                 }
             }
-            // Wire paths
+            // Magnet/Wire Holes
+            translate ([0, -11, 1+5/2]) rotate ([90, 0, 0]) cylinder (3, d=5, $fn=20);
             for (x=[-4, 4]) translate ([x, 0, 1.01]) {
-                translate ([-0.5, -35, 0]) cube ([1, 22, 1]);
+                translate ([-0.5, -35, 1.5]) cube ([1, 22, 1]);
             }
+            translate ([-4, -16, 2.5]) cube ([8, 1.15, 1]);
             // Small Wall Adjustment
             translate ([-24, -110, 8]) cube ([50-2, 100, 100]);
             // Screw Holes
