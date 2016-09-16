@@ -103,7 +103,9 @@ module t3_base () {
                 translate ([-14, 9, 0]) cube ([4, 4, 3]);
                 translate ([11, 11, 0]) cube ([4, 4, 3]);
                 // Magnet Support
-                translate ([0, -12, 1+5/2]) rotate ([90, 0, 0]) cylinder (3-0.1, d=6, $fn=10);
+                translate ([0, -12, 1+5.5/2]) scale ([1, 1, 1.2]) {
+                    rotate ([90, 0, 0]) cylinder (3-0.1, d=7, $fn=25);
+                }
             }
             // Speaker hole
             translate ([0, 27, 0]) {
@@ -114,7 +116,9 @@ module t3_base () {
                 }
             }
             // Magnet/Wire Holes
-            translate ([0, -11, 1+5/2]) rotate ([90, 0, 0]) cylinder (3, d=5, $fn=20);
+            translate ([0, -11, 1+6/2]) rotate ([90, 0, 0]) {
+                cylinder (3, d1=6, d2=5.5, $fn=20);
+            }
             for (x=[-4, 4]) translate ([x, 0, 1.01]) {
                 translate ([-0.5, -35, 1.5]) cube ([1, 22, 1]);
             }
