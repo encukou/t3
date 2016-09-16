@@ -98,10 +98,10 @@ module t3_base () {
                     }
                 }
                 // ESP-12 Support
-                translate ([-8, -12, 0]) cube ([3, 4, 3]);
-                translate ([5, -12, 0]) cube ([3, 4, 3]);
-                translate ([-10, 12, 0]) cube ([4, 4, 3]);
-                translate ([6, 12, 0]) cube ([4, 4, 3]);
+                translate ([-14, -3, 0]) cube ([3, 4, 3]);
+                translate ([11, -5, 0]) cube ([3, 4, 3]);
+                translate ([-14, 9, 0]) cube ([4, 4, 3]);
+                translate ([11, 11, 0]) cube ([4, 4, 3]);
             }
             // Speaker hole
             translate ([0, 27, 0]) {
@@ -126,7 +126,7 @@ module t3_base () {
             // Switch Support
             translate ([0, 0, 6.5]) switch(100, 0.5);
             // ESP-12 Support
-            translate ([-8-0.5, -10-0.5, 2]) cube ([16+1, 24+1, 100]);
+            translate ([-12-0.5, -3-0.5, 2]) cube ([24+1, 16+1, 100]);
         }
     }
 }
@@ -240,7 +240,7 @@ module extra_parts () {
     // Switch
     translate ([0, 0, 7]) switch(5);
     // ESP-12
-    translate ([-8, -10, 2]) {
+    translate ([-12, 13, 2]) rotate ([0, 0, -90]) {
         cube ([16, 24, 1]);
         translate ([2, 1, 0]) cube ([12, 15, 3]);
     }
