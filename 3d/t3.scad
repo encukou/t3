@@ -143,8 +143,10 @@ module t3_battery_cover () {
             }
             screw_holes ();
             for (x=[-3, 3]) translate ([x, 0, 0]) {
-                translate ([-0.5, -35, 0.5]) cube ([1, 100, 100]);
-                translate ([-0.5, -16, -1]) cube ([1, 100, 100]);
+                translate ([-0.5, -32, 0.75]) cube ([1, 6, 100]);
+                for (y=[-32, -26]) translate ([-0.5, y, -1]) {
+                    cube ([1, 1, 100]);
+                }
             }
         }
     }
