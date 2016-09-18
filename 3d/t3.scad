@@ -216,7 +216,7 @@ module t3_face () {
                     main_footprint (100, 1);
                 }
                 // Button Walls
-                buttons_transform () translate ([-2, -2, 0]) cube ([10, 10, 3]);
+                buttons_transform () translate ([-2, -2, 0]) cube ([10, 10, 2]);
                 // Screw Walls
                 intersection () {
                     btn_pad_screws_transform () {
@@ -226,11 +226,11 @@ module t3_face () {
                     translate ([-50, 3, 0]) cube ([100, 100, 100]);
                 }
                 // Alignment Pegs
-                for (x=[-1, 1]) translate([(MAIN_W/2-3)*x-2, 0, 0]) {
+                for (x=[-1, 1]) translate([(MAIN_W/2-3)*x-2, 2, 0]) {
                     cube ([4, 4, 5]);
                 }
                 // Screen Wall
-                screen_transform () roundrect (34, 34, 3, 5);
+                screen_transform () roundrect (33, 33, 3, 5);
                 // Switch Wall
                 switch (3, offset=1.5);
             }
@@ -249,6 +249,7 @@ module t3_face () {
                 screen_transform () for (x=[-1, 0, 1]) for (y=[-1, 0, 1]) {
                     translate ([x*9.5, y*9.5, -1]) roundrect (8.5, 8.5, 100, 1);
                 }
+                screen_transform () translate ([0, 0, 3]) roundrect (30, 30, 100, 4);
                 // Switch Hole
                 switch (100, offset=0.4);
             }
