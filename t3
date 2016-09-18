@@ -1,0 +1,4 @@
+#! /bin/bash -ex
+
+cd sw
+PYTHONPATH=../emu python3 -m t3emu
