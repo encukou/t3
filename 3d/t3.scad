@@ -242,7 +242,7 @@ module t3_face () {
                 }
                 // Button Holes
                 buttons_transform () {
-                    cube ([6, 6, 100]);
+                    translate ([-0.25, -0.25, 0]) cube ([6.5, 6.5, 100]);
                     translate ([0, 0, 2]) button_leg_holes ();
                 }
                 // Screen Hole
