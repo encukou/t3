@@ -73,7 +73,7 @@ def on_draw():
         px = sx+(2-x)*w
         py = sy+(2-y)*h
 
-        gl.glColor3f(*(c/255 for c in color))
+        gl.glColor3f(*((c/255)**0.5 for c in color))
         draw_rect(px, py, w-1, h-1)
 
         if sum(color) > 255:
@@ -103,6 +103,8 @@ def on_key_press(key, mod):
     pin = KEY_TO_PIN_MAP.get(key)
     if pin is not None:
         _pressed_button_pins.add(pin)
+    if key == pyglet.window.key.C:
+        window.close()
 
 @window.event
 def on_key_release(key, mod):
