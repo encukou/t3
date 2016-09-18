@@ -216,7 +216,7 @@ module t3_face () {
                     main_footprint (100, 1);
                 }
                 // Button Walls
-                buttons_transform () translate ([-2, -2, 0]) cube ([10, 10, 2]);
+                buttons_transform () translate ([-3, -3, 0]) cube ([12, 12, 2]);
                 // Screw Walls
                 intersection () {
                     btn_pad_screws_transform () {
