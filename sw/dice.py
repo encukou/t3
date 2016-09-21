@@ -6,10 +6,8 @@
 # 1/5  0f0f0f 000000 0f0f0f  000000 0f0f0f 000000  0f0f0f 000000 0f0f0f
 # 1/5  0f0f0f 0f0f0f 0f0f0f  000000 000000 000000  0f0f0f 0f0f0f 0f0f0f
 
+import t3
 from machine import Pin
-from neopixel import NeoPixel
-
-np = NeoPixel(Pin(5, Pin.OUT), 9)
 
 pin_a = Pin(0, Pin.IN)
 
@@ -41,10 +39,10 @@ def main():
         for i in range(8, -1, -1):
             if (face >> i) & 1:
                 if velocity:
-                    np[i] = 20, 23, 26
+                    t3.display[i] = 20, 23, 26
                 else:
-                    np[i] = 24, 30, 34
+                    t3.display[i] = 24, 30, 34
             else:
-                np[i] = 0, 0, 0
+                t3.display[i] = 0, 0, 0
         yield 0.01
 
