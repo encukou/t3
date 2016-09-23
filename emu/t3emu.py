@@ -107,6 +107,12 @@ def tick(dt):
     if end_loop:
         window.close()
 
+# Need to open MicropPython with bi-directional communication
+# (button state in; LED state out). Since MicroPython doesn't have threads,
+# the inward pipe needs to be opened in nonblocking mode.
+# There's no way a pipe can be switched to non-blocking mode MicroPython,
+# and subprocess doesn't provide a way to create non-blocking pipes.
+# So let's do what subprocess does manually: pipe, fork, dup2, and execvpe.
 
 in_read, in_write = os.pipe()
 out_read, out_write = os.pipe()
@@ -123,7 +129,6 @@ if os.fork() == 0:
     os.dup2(in_read, 0)
     os.dup2(out_write, 1)
     print('# Fork started')
-    print('# Initial command:', sys.stdin.read())
     os.execvpe('micropython', ['micropython', '-m', 'main'],
                {'MICROPYPATH': '.:../emu'})
 
@@ -131,9 +136,6 @@ os.close(in_read)
 os.close(out_write)
 in_file = os.fdopen(in_write, 'wb')
 out_file = os.fdopen(out_read, 'rb')
-
-in_file.write(b'> Initial command\n')
-in_file.flush()
 
 def run_main():
     while True:
