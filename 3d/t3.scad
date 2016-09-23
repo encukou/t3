@@ -19,6 +19,8 @@ SPEAKER_R = 7;
 
 TOP_L = MAIN_L - BOTTOM_L;
 
+HOOK_POSITIONS = [-30, 0, 30];
+
 module main_footprint (h, offset=0) {
     o = offset;
     o2 = o * sqrt(2);
@@ -101,7 +103,7 @@ module t3_body () {
                     }
                 }
                 // Little Hooks
-                for (x=[-30, 0, 30]) translate ([x, -BOTTOM_L, 0]) {
+                for (x=HOOK_POSITIONS) translate ([x, -BOTTOM_L, 0]) {
                     translate ([-2, 0, 1]) cube ([4, 2, 3]);
                     translate ([-2, 0, 3]) cube ([4, 3, 1]);
                     translate ([-2, 3, 3]) rotate ([45*5, 0, 0]) { 
@@ -258,12 +260,42 @@ module t3_face () {
     }
 }
 
+module t3_cover () {
+    union () {
+        difference () {
+            intersection () {
+                main_footprint (MAIN_H-1);
+                union () {
+                    h = MAIN_H-3;
+                    translate ([-100, -h, 2]) rotate ([0, 90, 0]) cylinder (200, r=h);
+                    translate ([-50, -100-h, -1]) cube ([100, 100, 100]);
+                }
+            }
+            difference () {
+                translate ([0, 0, 1]) main_footprint (100, 1);
+                for (x=HOOK_POSITIONS) union () {
+                    translate ([x-4, -BOTTOM_L, 10]) cube ([8, 3, 100]);
+                    translate ([x-4, -BOTTOM_L+3, 10]) rotate ([135, 0, 0]) cube ([8, 3, 3]);
+                }
+            }
+            for (x=HOOK_POSITIONS) translate ([x, -BOTTOM_L-0.8, MAIN_H]) scale ([1.1, 1, -1]) {
+                translate ([-2, -4, 1]) cube ([4, 6, 3.5]);
+                translate ([-2, 0, 3]) cube ([4, 3, 1.5]);
+                translate ([-2, 3, 3]) rotate ([45*5, 0, 0]) { 
+                    translate ([0, 0, -1]) cube ([4, 3, 1]);
+                }
+            }
+        }
+    }
+}
+
 union () {
     t3_body ();
-    translate ([60, 0, 0]) flexbatterAA(n=3);
-    translate ([95, -50, 0]) t3_xpad_pad ();
-    translate ([65, -50, 0]) t3_ab_pad ();
-    translate ([0, -125, 0]) t3_face ();
+    translate ([100, -5, 0]) t3_cover();
+    translate ([-30, -125, 0]) flexbatterAA(n=3);
+    translate ([70, -125, 0]) t3_xpad_pad ();
+    translate ([40, -125, 0]) t3_ab_pad ();
+    translate ([100, 0, 0]) t3_face ();
 }
 
 % union () {
@@ -273,5 +305,6 @@ union () {
     translate ([0, 0, MAIN_H-7]) switch ();
     translate ([0, 0, MAIN_H-4]) { t3_xpad_pad (); t3_ab_pad (); }
     translate ([0, 0, MAIN_H]) rotate ([0, 180, 0]) t3_face ();
+    //translate ([0, 0, MAIN_H]) rotate ([0, 180, 0]) t3_cover();
     speaker ();
 }
