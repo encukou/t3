@@ -1,4 +1,3 @@
-import uos
 import urandom
 import time
 import machine
@@ -6,7 +5,6 @@ import sys
 
 from machine import Pin
 from neopixel import NeoPixel
-
 
 # Display
 
@@ -74,6 +72,15 @@ def random_uniform(a, b):
     byte = urandom.getrandbits(8)
     return a + (byte / 256) * (b - a)
 
+# Listdir helper
+
+try:
+    from uos import listdir
+except ImportError:
+    from uos import ilistdir
+    def listdir():
+        return [directory for directory, _, _ in ilistdir()]
+
 # Task helpers
 
 _task_i = 0
@@ -91,6 +98,7 @@ def _sys_task():
     while True:
         display._np.write()
         yield 1/120
+
         if hasattr(machine, '_t3_emulated'):
             rd = sys.stdin.read(1)
             if rd is not None:
@@ -99,9 +107,9 @@ def _sys_task():
                     cmd, sep, stdin_line = stdin_line.partition('\n')
                     print('>', cmd)
                     if cmd.startswith('+'):
-                        machine._pressed_button_pins.add(int(cmd[1:]))
-                    elif cmd.startswith('+'):
-                        machine._pressed_button_pins.discard(int(cmd[1:]))
+                        machine._pin_objects[int(cmd[1:])]._fall_callback()
+                    elif cmd.startswith('-'):
+                        machine._pin_objects[int(cmd[1:])]._rise_callback()
 
 start_task(_sys_task())
 
@@ -121,9 +129,36 @@ def run():
 
 # Buttons
 
-_prev_buttons = 0
-_current_buttons = 0
+_pressed_buttons = 0
+_changed_buttons = 0
 
-# XXX: IRQ
+class Button:
+    def __init__(self, number, pin_number):
+        self.number = number
+        self.mask = 1 << number
+        self.pin = Pin(pin_number, Pin.IN, pull=Pin.PULL_UP)
+        self.pin.irq(
+            trigger=Pin.IRQ_FALLING,
+            handler=self._fell)
+        self.pin.irq(
+            trigger=Pin.IRQ_RISING,
+            handler=self._rose)
 
+    def _fell(self):
+        global _pressed_buttons
+        _pressed_buttons |= self.mask
 
+    def _rose(self):
+        global _pressed_buttons
+        _pressed_buttons &= ~self.mask
+
+    @property
+    def value(self):
+        return bool(_pressed_buttons & self.mask)
+
+left = Button(0, 15)
+right = Button(1, 13)
+up = Button(2, 12)
+down = Button(3, 14)
+a = Button(4, 0)
+b = Button(5, 2)

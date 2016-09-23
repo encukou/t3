@@ -1,20 +1,4 @@
-import uos
-
-from machine import Pin
-
 import t3
-
-try:
-    from uos import listdir
-except ImportError:
-    from uos import ilistdir
-    def listdir():
-        return [directory for directory, _, _ in ilistdir()]
-
-pin_left = Pin(13, Pin.IN)
-pin_right = Pin(15, Pin.IN)
-pin_a = Pin(0, Pin.IN)
-
 
 def args(*a):
     return a
@@ -137,15 +121,15 @@ class MenuItem:
 
 
 def main_menu():
-    items = list(MenuItem(n) for n in listdir() if n.endswith('.py'))
+    items = list(MenuItem(n) for n in t3.listdir() if n.endswith('.py'))
     for item, prev, nxt in zip(items, [items[-1]] + items, items[1:] + [items[0]]):
         item.prev = prev
         item.next = nxt
     current_item = items[0].get_next()
     current_frame = -1
-    left_prev = pin_left.value()
-    right_prev = pin_left.value()
-    a_prev = pin_a.value()
+    left_prev = t3.left.value
+    right_prev = t3.right.value
+    a_prev = t3.a.value
     while True:
         current_frame += 1
         current_frame %= len(current_item.data)
@@ -154,9 +138,9 @@ def main_menu():
             t3.display[i] = pixel
         yield wait
 
-        left = pin_left.value()
-        right = pin_right.value()
-        a = pin_a.value()
+        left = t3.left.value
+        right = t3.right.value
+        a = t3.a.value
 
         if left and not left_prev:
             current_item = current_item.get_prev()
