@@ -1,9 +1,15 @@
-import os
-import random
+import uos
 
 from machine import Pin
 
 import t3
+
+try:
+    from uos import listdir
+except ImportError:
+    from uos import ilistdir
+    def listdir():
+        return [directory for directory, _, _ in ilistdir()]
 
 pin_left = Pin(13, Pin.IN)
 pin_right = Pin(15, Pin.IN)
@@ -27,14 +33,14 @@ def anim_starter(func, anims):
 
 
 def bluish():
-    hue = random.uniform(0.43, 0.67)
+    hue = t3.random_uniform(0.43, 0.67)
     sat = 0.26
     lightness = 0.4
     return t3.hls_to_rgb(hue, sat, lightness)
 
 
 def reddish():
-    hue = random.uniform(-0.07, 0.07)
+    hue = t3.random_uniform(-0.07, 0.07)
     sat = 0.26
     lightness = 0.4
     return t3.hls_to_rgb(hue, sat, lightness)
@@ -131,7 +137,7 @@ class MenuItem:
 
 
 def main_menu():
-    items = list(MenuItem(n) for n in os.listdir() if n.endswith('.py'))
+    items = list(MenuItem(n) for n in listdir() if n.endswith('.py'))
     for item, prev, nxt in zip(items, [items[-1]] + items, items[1:] + [items[0]]):
         item.prev = prev
         item.next = nxt

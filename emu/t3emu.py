@@ -2,17 +2,20 @@ import math
 import contextlib
 import sys
 import threading
+import subprocess
+import ast
+import fcntl
+import os
 
 import pyglet
 import pyglet.window
 from pyglet import gl
 
-from neopixel import _strip
-from machine import _pressed_button_pins
-
 sys.path.clear()
 sys.path.append('.')
 
+_strip = [(0, 0, 0)] * 9
+_pressed_button_pins = set()
 
 window = pyglet.window.Window(
     width=500, height=300,
@@ -68,7 +71,7 @@ def on_draw():
     window.clear()
     w, sx = _dim(window.width, window.height)
     h, sy = _dim(window.height, window.width)
-    for i, color in enumerate(_strip._committed):
+    for i, color in enumerate(_strip):
         y, x = divmod(i, 3)
         px = sx+(2-x)*w
         py = sy+(2-y)*h
@@ -98,32 +101,69 @@ def on_draw():
         _draw_button(sx+w*3.5, sy+h*1.6, (i+2)*90, pin)
 
 
-@window.event
-def on_key_press(key, mod):
-    pin = KEY_TO_PIN_MAP.get(key)
-    if pin is not None:
-        _pressed_button_pins.add(pin)
-    if key == pyglet.window.key.C:
-        window.close()
-
-@window.event
-def on_key_release(key, mod):
-    pin = KEY_TO_PIN_MAP.get(key)
-    _pressed_button_pins.discard(pin)
-
-
 end_loop = False
 
 def tick(dt):
     if end_loop:
         window.close()
 
+
+in_read, in_write = os.pipe()
+out_read, out_write = os.pipe()
+
+sys.stdin.flush()
+sys.stdout.flush()
+if os.fork() == 0:
+    os.close(in_write)
+    os.close(out_read)
+
+    fl = fcntl.fcntl(in_read, fcntl.F_GETFL)
+    fcntl.fcntl(in_read, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+
+    os.dup2(in_read, 0)
+    os.dup2(out_write, 1)
+    print('# Fork started')
+    print('# Initial command:', sys.stdin.read())
+    os.execvpe('micropython', ['micropython', '-m', 'main'],
+               {'MICROPYPATH': '.:../emu'})
+
+os.close(in_read)
+os.close(out_write)
+in_file = os.fdopen(in_write, 'wb')
+out_file = os.fdopen(out_read, 'rb')
+
+in_file.write(b'> Initial command\n')
+in_file.flush()
+
 def run_main():
-    try:
-        import main
-    finally:
-        global end_loop
-        end_loop = True
+    while True:
+        line = out_file.readline()
+        if line == b'':
+            break
+        if line.startswith(b'* '):
+            _strip[:] = ast.literal_eval(line[2:].decode('ascii'))
+        else:
+            print('*', line)
+    end_loop = True
+
+
+@window.event
+def on_key_press(key, mod):
+    pin = KEY_TO_PIN_MAP.get(key)
+    if pin is not None:
+        _pressed_button_pins.add(pin)
+        in_file.write('+{}\n'.format(pin).encode('ascii'))
+        in_file.flush()
+    if key == pyglet.window.key.C:
+        window.close()
+
+@window.event
+def on_key_release(key, mod):
+    pin = KEY_TO_PIN_MAP.get(key)
+    if pin is not None:
+        _pressed_button_pins.discard(pin)
+        in_file.write('-{}\n'.format(pin).encode('ascii'))
+        in_file.flush()
 
 pyglet.clock.schedule_interval(tick, 1/60)
 

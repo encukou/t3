@@ -1,3 +1,5 @@
+import sys
+
 NUM_PIXELS = 9
 
 class _NeoPixel():
@@ -14,6 +16,8 @@ class _NeoPixel():
 
     def write(self):
         self._committed = list(tuple(x) for x in self._data)
+        print('*', self._committed)
+        sys.stdout.flush()
 
 _strip = _NeoPixel()
 
