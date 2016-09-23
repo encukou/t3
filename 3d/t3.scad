@@ -228,8 +228,9 @@ module t3_face () {
                     translate ([-50, 3, 0]) cube ([100, 100, 100]);
                 }
                 // Alignment Pegs
-                for (x=[-1, 1]) translate([(MAIN_W/2-3)*x-2, 2, 0]) {
-                    cube ([4, 4, 5]);
+                for (x=[-1, 1]) {
+                    translate([(MAIN_W/2-3)*x-2, 2, 0]) cube ([4, 4, 5]);
+                    translate([(MAIN_W/2-13)*x-2, TOP_L-5, 0]) cube ([4, 4, 5]);
                 }
                 // Screen Wall
                 screen_transform () roundrect (33, 33, 3, 5);
@@ -267,23 +268,31 @@ module t3_cover () {
                 main_footprint (MAIN_H-1);
                 union () {
                     h = MAIN_H-3;
-                    translate ([-100, -h, 2]) rotate ([0, 90, 0]) cylinder (200, r=h);
-                    translate ([-50, -100-h, -1]) cube ([100, 100, 100]);
+                    translate ([-100, -h-0.5, 2]) rotate ([0, 90, 0]) cylinder (200, r=h);
+                    translate ([-50, -100-h-0.5, -1]) cube ([100, 100, 100]);
                 }
             }
             difference () {
-                translate ([0, 0, 1]) main_footprint (100, 1);
-                for (x=HOOK_POSITIONS) union () {
-                    translate ([x-4, -BOTTOM_L, 10]) cube ([8, 3, 100]);
-                    translate ([x-4, -BOTTOM_L+3, 10]) rotate ([135, 0, 0]) cube ([8, 3, 3]);
+                union () {
+                    translate ([0, 0, 1]) main_footprint (100, 1);
                 }
+                for (x=concat(HOOK_POSITIONS, [-15, 15])) {
+                    for (xx=[-3, 3]) {
+                        translate ([x+xx-0.5, -BOTTOM_L, 0]) cube ([1, 3, MAIN_H-1]);
+                    }
+                }
+                translate ([-100, -BOTTOM_L+1, MAIN_H-1.75]) cube ([200, 2, 1.25]);
             }
-            for (x=HOOK_POSITIONS) translate ([x, -BOTTOM_L-0.8, MAIN_H]) scale ([1.1, 1, -1]) {
-                translate ([-2, -4, 1]) cube ([4, 6, 3.5]);
-                translate ([-2, 0, 3]) cube ([4, 3, 1.5]);
-                translate ([-2, 3, 3]) rotate ([45*5, 0, 0]) { 
-                    translate ([0, 0, -1]) cube ([4, 3, 1]);
-                }
+            for (x=HOOK_POSITIONS) union () {
+                translate ([x-2.5, -BOTTOM_L-1, MAIN_H-4]) cube ([5, 3.2, 100]);
+            }
+        }
+        translate ([-MAIN_W/2+1, -2, 0]) cube ([MAIN_W-2, 2, 2]);
+        intersection () {
+            main_footprint (MAIN_H-1);
+            union () {
+                translate ([-MAIN_W/2+1, -100, 0]) cube ([2, 100, 100]);
+                translate ([MAIN_W/2-3, -100, 0]) cube ([2, 100, 100]);
             }
         }
     }
