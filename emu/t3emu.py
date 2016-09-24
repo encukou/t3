@@ -26,7 +26,7 @@ KEY_TO_PIN_MAP = {
     pyglet.window.key.UP: 12,
     pyglet.window.key.RIGHT: 13,
     pyglet.window.key.DOWN: 14,
-    pyglet.window.key.LEFT: 15,
+    pyglet.window.key.LEFT: 16,
     pyglet.window.key.Z: 0,
     pyglet.window.key.X: 2,
 }
@@ -95,7 +95,7 @@ def on_draw():
                 gl.glColor3f(0.1, 0.1, 0.1)
             draw_rect(1, 1, w/2, w/2)
 
-    for i, pin in enumerate([12, 13, 14, 15]):
+    for i, pin in enumerate([12, 13, 14, 16]):
         _draw_button(sx-w, sy+h*1.5, -i*90, pin)
     for i, pin in enumerate([0, 2]):
         _draw_button(sx+w*3.5, sy+h*1.6, (i+2)*90, pin)

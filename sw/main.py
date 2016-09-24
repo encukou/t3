@@ -1,5 +1,12 @@
 import t3
 
+if not hasattr(t3.machine, '_t3_emulated'):
+    import network
+    wlan = network.WLAN(network.STA_IF)
+    wlan.active(False)
+    ap = network.WLAN(network.AP_IF)
+    ap.active(False)
+
 def args(*a):
     return a
 

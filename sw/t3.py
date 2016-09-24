@@ -103,6 +103,7 @@ _button_handler = None
 def _sys_task():
     global _stdin_line
     global _prev_buttons
+    global _pressed_buttons
     while True:
         display._np.write()
         yield 1/120
@@ -115,9 +116,14 @@ def _sys_task():
                     cmd, sep, _stdin_line = _stdin_line.partition('\n')
                     print('>', cmd)
                     if cmd.startswith('+'):
-                        machine._pin_objects[int(cmd[1:])]._fall_callback()
+                        _pressed_buttons |= 1 << _button_map[int(cmd[1:])]
                     elif cmd.startswith('-'):
-                        machine._pin_objects[int(cmd[1:])]._rise_callback()
+                        _pressed_buttons &= ~(1 << _button_map[int(cmd[1:])])
+        else:
+            _pressed_buttons = 0
+            for btn in a, b, left, right, up, down:
+                if not btn.pin.value():
+                    _pressed_buttons |= btn.mask
 
         now_buttons = _pressed_buttons
         button_change = now_buttons ^ _prev_buttons
@@ -144,33 +150,20 @@ def run():
 # Buttons
 
 _pressed_buttons = 0
-_changed_buttons = 0
+_button_map = {}
 
 class _Button:
     def __init__(self, number, pin_number):
         self.number = number
         self.mask = 1 << number
         self.pin = Pin(pin_number, Pin.IN, pull=Pin.PULL_UP)
-        self.pin.irq(
-            trigger=Pin.IRQ_FALLING,
-            handler=self._fell)
-        self.pin.irq(
-            trigger=Pin.IRQ_RISING,
-            handler=self._rose)
-
-    def _fell(self):
-        global _pressed_buttons
-        _pressed_buttons |= self.mask
-
-    def _rose(self):
-        global _pressed_buttons
-        _pressed_buttons &= ~self.mask
+        _button_map[pin_number] = number
 
     @property
     def value(self):
         return bool(_pressed_buttons & self.mask)
 
-left = _Button(0, 15)
+left = _Button(0, 16)
 right = _Button(1, 13)
 up = _Button(2, 12)
 down = _Button(3, 14)
