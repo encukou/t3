@@ -148,9 +148,8 @@ def main_menu():
             current_item = current_item.get_next()
         if a and not a_prev:
             ns = {}
-            with open(current_item.name) as f:
-                exec(f.read(), ns)
-            t3.start_task(ns['main']())
+            module = __import__(current_item.name[:-3])
+            t3.start_task(module.main())
             return
 
         left_prev = left
