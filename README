@@ -1,0 +1,40 @@
+# T3
+
+The T3 is a minimalistic handheld game console.
+
+Specs:
+* Power:       3 AA batteries
+* Processor:   ESP8266
+* Input:       6 buttons (directions, A, B)
+* Display:     3×3 truecolor
+* Sound:       1-bit PWM piezo
+
+## Usage
+
+When turned on, the console displays a “T3” welcome animation and enters the
+game selection menu.
+Press left/right to select a game, and press A to launch it.
+Currently there is 1 “game” available:
+
+### Dice
+
+Simulates a 6-sided die. Press A to re-roll.
+When ready, the result is shown colorfully.
+
+## The emulator
+
+A rudimentary emulator is included to aid development and to run games without
+a physical console.
+The emulator is not accurate--it runs with the speed and memory of the host
+computer--but it's useful for validating high-level logic.
+
+To run the emulator, you will need Python 3.5+ *and* MicroPython, plus the
+Pyglet library. On Fedora, you can install the prerequisites with:
+
+    sudo dnf install python3 micropython python3-pyglet
+
+(Please contribute instructions for other systems.
+Note: the emulator won't work on Windows without major changes.)
+
+Run the included `t3` script to launch the emulator.
+Control it with arrow keys, and Z/X for the A/B buttons.
