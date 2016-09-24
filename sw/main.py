@@ -127,34 +127,30 @@ def main_menu():
         item.next = nxt
     current_item = items[0].get_next()
     current_frame = -1
-    left_prev = t3.left.value
-    right_prev = t3.right.value
-    a_prev = t3.a.value
-    while True:
+
+    loop = True
+    def button_handler(buttons):
+        nonlocal current_item, loop
+        if buttons.pressed[t3.left]:
+            current_item = current_item.get_prev()
+        if buttons.pressed[t3.right]:
+            current_item = current_item.get_next()
+        if buttons.pressed[t3.a]:
+            loop = False
+            t3.set_button_handler(None)
+            ns = {}
+            module = __import__(current_item.name[:-3])
+            t3.start_task(module.main())
+
+    t3.set_button_handler(button_handler)
+
+    while loop:
         current_frame += 1
         current_frame %= len(current_item.data)
         wait, pixels = current_item.data[current_frame]
         for i, pixel in enumerate(pixels):
             t3.display[i] = pixel
         yield wait
-
-        left = t3.left.value
-        right = t3.right.value
-        a = t3.a.value
-
-        if left and not left_prev:
-            current_item = current_item.get_prev()
-        if right and not right_prev:
-            current_item = current_item.get_next()
-        if a and not a_prev:
-            ns = {}
-            module = __import__(current_item.name[:-3])
-            t3.start_task(module.main())
-            return
-
-        left_prev = left
-        right_prev = right
-        a_prev = a
 
 
 t3.start_task(delay(2.7, main_menu()))

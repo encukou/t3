@@ -91,10 +91,13 @@ def start_task(gen):
     _tasks.append([0, _task_i, gen])
     _task_i += 1
 
-stdin_line = ''
+_stdin_line = ''
+_prev_buttons = 0
+_button_handler = None
 
 def _sys_task():
-    global stdin_line
+    global _stdin_line
+    global _prev_buttons
     while True:
         display._np.write()
         yield 1/120
@@ -102,14 +105,20 @@ def _sys_task():
         if hasattr(machine, '_t3_emulated'):
             rd = sys.stdin.read(1)
             if rd is not None:
-                stdin_line += rd
-                if '\n' in stdin_line:
-                    cmd, sep, stdin_line = stdin_line.partition('\n')
+                _stdin_line += rd
+                if '\n' in _stdin_line:
+                    cmd, sep, _stdin_line = _stdin_line.partition('\n')
                     print('>', cmd)
                     if cmd.startswith('+'):
                         machine._pin_objects[int(cmd[1:])]._fall_callback()
                     elif cmd.startswith('-'):
                         machine._pin_objects[int(cmd[1:])]._rise_callback()
+
+        now_buttons = _pressed_buttons
+        button_change = now_buttons ^ _prev_buttons
+        if button_change and _button_handler:
+            _button_handler(_ButtonChangeInfo(_prev_buttons, now_buttons))
+        _prev_buttons = now_buttons
 
 start_task(_sys_task())
 
@@ -162,3 +171,23 @@ up = _Button(2, 12)
 down = _Button(3, 14)
 a = _Button(4, 0)
 b = _Button(5, 2)
+
+class _ButtonChangeInfo:
+    def __init__(self, prev, now):
+        self._prev = prev
+        self._now = now
+        changes = prev ^ now
+        self.pressed = _ButtonInfo(changes & now)
+        self.released = _ButtonInfo(changes & ~now)
+        self.held = _ButtonInfo(now)
+
+class _ButtonInfo:
+    def __init__(self, value):
+        self._value = value
+
+    def __getitem__(self, button):
+        return bool(self._value & button.mask)
+
+def set_button_handler(handler):
+    global _button_handler
+    _button_handler = handler
