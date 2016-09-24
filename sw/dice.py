@@ -7,9 +7,6 @@
 # 1/5  0f0f0f 0f0f0f 0f0f0f  000000 000000 000000  0f0f0f 0f0f0f 0f0f0f
 
 import t3
-from machine import Pin
-
-pin_a = Pin(0, Pin.IN)
 
 FACES = {
     0: 0b000010000,
@@ -28,7 +25,7 @@ def main():
     velocity = 0
     value = 0
     while True:
-        if pin_a.value():
+        if t3.a.value:
             velocity = 2
         velocity *= 0.97
         if velocity < 0.01:
@@ -45,4 +42,3 @@ def main():
             else:
                 t3.display[i] = 0, 0, 0
         yield 0.01
-
