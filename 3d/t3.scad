@@ -287,7 +287,6 @@ module t3_cover () {
                 translate ([x-2.5, -BOTTOM_L-1, MAIN_H-4]) cube ([5, 3.2, 100]);
             }
         }
-        translate ([-MAIN_W/2+1, -2, 0]) cube ([MAIN_W-2, 2, 2]);
         intersection () {
             main_footprint (MAIN_H-1);
             union () {
