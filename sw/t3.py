@@ -72,6 +72,11 @@ def random_uniform(a, b):
     byte = urandom.getrandbits(8)
     return a + (byte / 256) * (b - a)
 
+def randrange(a, b):
+    values = range(a, b)
+    byte = urandom.getrandbits(8)
+    return values[byte % len(values)]
+
 # Listdir helper
 
 try:
