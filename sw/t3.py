@@ -132,7 +132,7 @@ def run():
 _pressed_buttons = 0
 _changed_buttons = 0
 
-class Button:
+class _Button:
     def __init__(self, number, pin_number):
         self.number = number
         self.mask = 1 << number
@@ -156,9 +156,9 @@ class Button:
     def value(self):
         return bool(_pressed_buttons & self.mask)
 
-left = Button(0, 15)
-right = Button(1, 13)
-up = Button(2, 12)
-down = Button(3, 14)
-a = Button(4, 0)
-b = Button(5, 2)
+left = _Button(0, 15)
+right = _Button(1, 13)
+up = _Button(2, 12)
+down = _Button(3, 14)
+a = _Button(4, 0)
+b = _Button(5, 2)
