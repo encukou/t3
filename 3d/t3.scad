@@ -230,7 +230,7 @@ module t3_face () {
                 // Alignment Pegs
                 for (x=[-1, 1]) {
                     translate([(MAIN_W/2-3)*x-2, 2, 0]) cube ([4, 4, 5]);
-                    translate([(MAIN_W/2-13)*x-2, TOP_L-5, 0]) cube ([4, 4, 5]);
+                    translate([(MAIN_W/2-13)*x-2, TOP_L-3, 0]) cube ([4, 2, 5]);
                 }
                 // Screen Wall
                 screen_transform () roundrect (33, 33, 3, 5);
@@ -298,12 +298,12 @@ module t3_cover () {
 }
 
 union () {
-    *t3_body ();
+    t3_body ();
     translate ([100, -5, 0]) t3_cover();
-    *translate ([-30, -125, 0]) flexbatterAA(n=3);
-    *translate ([70, -125, 0]) t3_xpad_pad ();
-    *translate ([40, -125, 0]) t3_ab_pad ();
-    *translate ([100, 0, 0]) t3_face ();
+    translate ([-30, -125, 0]) flexbatterAA(n=3);
+    translate ([70, -125, 0]) t3_xpad_pad ();
+    translate ([40, -125, 0]) t3_ab_pad ();
+    translate ([100, 0, 0]) t3_face ();
 }
 
 % union () {
