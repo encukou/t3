@@ -12,7 +12,7 @@ SCREW_TIGHT_R = 1.25;
 
 SWITCH_W = 10;
 SWITCH_L = 2.5;
-SWITCH_H = 7;
+SWITCH_H = 5.5;
 
 SPEAKER_H = 7;
 SPEAKER_R = 7;
@@ -68,7 +68,7 @@ module screen_transform () {
 
 module switch (h=SWITCH_H, offset=0) {
     translate ([-SWITCH_W/2-offset, TOP_L-SWITCH_L-1.5-offset, 0]) {
-        cube ([SWITCH_W+offset*2, SWITCH_L+offset*2, h]);
+        cube ([SWITCH_W+offset*2, SWITCH_L+offset*2, h+offset]);
     }
 }
 
@@ -133,7 +133,7 @@ module t3_body () {
             }
             // Switch Hole
             translate ([0, 0, MAIN_H-SWITCH_H]) {
-                switch (offset=0.5);
+                switch (h=SWITCH_H, offset=0.5);
             }
             // Speaker Hole
             speaker (SPEAKER_H+0.5, r=SPEAKER_R+0.5);
@@ -235,7 +235,8 @@ module t3_face () {
                 // Screen Wall
                 screen_transform () roundrect (33, 33, 3, 5);
                 // Switch Wall
-                switch (3, offset=1.5);
+                sw_offset = 1.5;
+                switch (3-sw_offset, offset=sw_offset);
             }
             translate ([0, 0, -1]) {
                 // Screw Holes
@@ -310,7 +311,7 @@ union () {
     translate ([0, 0, 2.1]) bat_tranform () flexbatterAA(n=3);
     breadb_transform () translate ([-31/2, -58/2, 10]) cube ([31, 58, 7]);
     translate ([0, 0, MAIN_H-3]) buttons_transform () cube ([6, 6, 3]);
-    translate ([0, 0, MAIN_H-7]) switch ();
+    translate ([0, 0, MAIN_H-SWITCH_H]) switch ();
     translate ([0, 0, MAIN_H-4]) { t3_xpad_pad (); t3_ab_pad (); }
     translate ([0, 0, MAIN_H]) rotate ([0, 180, 0]) t3_face ();
     //translate ([0, 0, MAIN_H]) rotate ([0, 180, 0]) t3_cover();
