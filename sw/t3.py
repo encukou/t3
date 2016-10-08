@@ -106,7 +106,7 @@ def _sys_task():
     global _pressed_buttons
     while True:
         display._np.write()
-        yield 1/120
+        yield 1/60
 
         if hasattr(machine, '_t3_emulated'):
             rd = sys.stdin.read(1)
@@ -156,7 +156,10 @@ class _Button:
     def __init__(self, number, pin_number):
         self.number = number
         self.mask = 1 << number
-        self.pin = Pin(pin_number, Pin.IN, pull=Pin.PULL_UP)
+        if pin_number == 16:
+            self.pin = Pin(pin_number, Pin.IN)
+        else:
+            self.pin = Pin(pin_number, Pin.IN, pull=Pin.PULL_UP)
         _button_map[pin_number] = number
 
     @property
