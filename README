@@ -38,3 +38,138 @@ Note: the emulator won't work on Windows without major changes.)
 
 Run the included `t3` script to launch the emulator.
 Control it with arrow keys, and Z/X for the A/B buttons.
+
+## API
+
+## Building it
+
+Here are notes on building the console.
+
+(Questions and pull requests aimed towards making them more obvious would be
+more than welcome!)
+
+
+### Bill of Materials
+
+| Part                                                   | Count             |
+| ------------------------------------------------------ | ----------------- |
+| NodeMCU board                                          | 1                 |
+| Mini breadboard with mounting holes                    | 1                 |
+| Tactile switches 6x6x1mm                               | 6                 |
+| Piezo sounder, 14mm diameter, 7mm height (excl. leads) | 1                 |
+| Sliding switch, 10x2.5x7mm                             | 1                 |
+| WS2812B LED modules (1cm circular PCB)                 | 9 (in 3x3 square) |
+| Screws, 2x25 (metric)                                  | 6                 |
+| AA Batteries                                           | 3                 |
+| Wires                                                  | |
+| 3D printer filament                                    | |
+| Translucent sheet (parchment paper)                    | |
+| Sheet of clear plactic                                 | |
+
+### Tools needed
+
+* 3D printer
+* Soldering equipment
+* Screwdriver
+* Sharp knife
+* Marker
+
+### Instructions
+
+Flash MicroPython onto the NodeMCU board, and upload all files from the
+`sw` directory to it.
+
+Print the printed parts from the `3d` directory.
+They'll fit (barely) on a 200×200mm print bed.
+
+Put the buttons in the printed button pads.
+On the reverse side, solder one wire to all 4 innermost contacts on the pad
+with 4 buttons.
+Solder another wire to the 2 innermost contacts on the pad with 2 buttons.
+Then, solder one wire each (total 6 wires) to all the outermost contacts.
+
+Solder wires to the leads of the speaker.
+
+Connect spacts of the batteries in the battery holder together, and attach
+power wires, like this:
+
+    -------- +  BATTERY  - ---.
+                              |
+        .---------------------'
+        |
+        '--- +  BATTERY  - ---.
+                              |
+        .---------------------'
+        |
+        '--- +  BATTERY  - ---------------
+
+Solder the WS2812B modules together into a 3x3 array. All `+` pads should
+be connected together; all `-` pads should also be connected, and the
+individual modules should be chained together using the DI (Data In) and
+DO (Data Out) pads, like this:
+
+
+    .-- 2 <- 1 <- 0
+    '------------------.
+    .-- 5 <- 4 <- 3  <-'
+    '------------------.
+        8 <- 7 <- 6  <-'
+
+The modules should be tightly packed, and should fit tightly into the
+space on the display on the 3D printed base.
+Solder wires to the first WS2812B's `+`, `-`, and `DI` pads.
+
+Using two screws, attach the mini breadboard to the 3D printed base.
+
+Snap the speaker into its holder at the top of the console.
+
+Then, attach the button pads to the lower two "columns" in the base.
+
+Connect wires to the breadboard accrording to the diagram below. Always
+leave the outermost column empty, so you'll be able to insert the NodeMCU
+later:
+
+
+                        ---      ooooo  ooooo      ---
+                        --- (A0) ooooo  ooooo (D0) ---
+          common: 4 buttons  (G) ooooo  ooooo (D1) DI of WS2812B array
+         + of WS2812B array (VU) ooooo  ooooo (D2) "left" button
+                        --- (S3) ooooo  ooooo (D3) "A" button
+                        --- (S2) ooooo  ooooo (D4) "B" button
+                        --- (S1) ooooo  ooooo (3V) ---
+                        --- (SC) ooooo  ooooo (G)  common: 2 buttons
+                        --- (SO) ooooo  ooooo (D5) "down" button
+                        --- (SK) ooooo  ooooo (D6) "up" button
+                    speaker  (G) ooooo  ooooo (D7) "right" button
+                        --- (3V) ooooo  ooooo (D8) speaker
+                        --- (EN) ooooo  ooooo (RX) ---
+                        --- (RS) ooooo  ooooo (TX) ---
+          wire (for switch)  (G) ooooo  ooooo (G)  ---
+        + of battery holder (VI) ooooo  ooooo (3V) ---
+                        ---      ooooo  ooooo      ---
+
+Solder the "wire (for switch)" to the middle terminal of the sliding switch,
+and the wire from the `-` terminal to one of the other terminals.
+Put the sliding switch in place at the top of the console.
+
+Insert the NodeMCU board into the breadboard, as indicated in the diagram
+above.
+
+Using a hot glue gun, attach the battery holder to the base.
+
+Cut a piece of the translucent sheet in the shape of the top cover.
+Cut out holes for the buttons (but not the display), the sliding
+switch, and two screws.
+Cut out the same shape with the clear plastic.
+
+You can draw markings for the buttons and switch on the translucent cover.
+
+Snap the top cover into the top part of the console. Layer the translucent
+paper and clear plastic on top, and secure with two screws.
+
+Insert the batteries into the holder.
+
+Attach the bottom cover – insert it into the hooks first, then close it.
+
+Your console is now complete.
+
