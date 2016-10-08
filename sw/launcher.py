@@ -1,6 +1,5 @@
 import t3
 import sys
-import machine
 
 if not hasattr(t3.machine, '_t3_emulated'):
     import network
@@ -98,7 +97,10 @@ def main_menu():
 
     with open('selected-game', 'w') as f:
         f.write(selected_name)
-    machine.reset()
+    for i in range(9):
+        t3.display[i] = 0, 2, 2
+        t3.display.write_now()
+    t3.machine.reset()
 
 
 # 1/5  000000 000000 000000  000000 000000 000000  000000 000000 000000

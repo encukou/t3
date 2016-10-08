@@ -39,6 +39,9 @@ class _Display:
             yield 1/60
         np[index] = end
 
+    def write_now(self):
+        self._np.write()
+
 display = _Display()
 
 
@@ -105,7 +108,7 @@ def _sys_task():
     global _prev_buttons
     global _pressed_buttons
     while True:
-        display._np.write()
+        display.write_now()
         yield 1/60
 
         if hasattr(machine, '_t3_emulated'):
