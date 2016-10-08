@@ -156,17 +156,14 @@ class _Button:
     def __init__(self, number, pin_number):
         self.number = number
         self.mask = 1 << number
-        if pin_number == 16:
-            self.pin = Pin(pin_number, Pin.IN)
-        else:
-            self.pin = Pin(pin_number, Pin.IN, pull=Pin.PULL_UP)
+        self.pin = Pin(pin_number, Pin.IN, pull=Pin.PULL_UP)
         _button_map[pin_number] = number
 
     @property
     def value(self):
         return bool(_pressed_buttons & self.mask)
 
-left = _Button(0, 16)
+left = _Button(0, 4)
 right = _Button(1, 13)
 up = _Button(2, 12)
 down = _Button(3, 14)

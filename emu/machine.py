@@ -19,8 +19,7 @@ class Pin:
             assert mode == Pin.OUT
         else:
             assert mode == Pin.IN
-            if number != 16:
-                assert pull == Pin.PULL_UP
+            assert pull == Pin.PULL_UP
         self._num = number
         self._mode = mode
 
