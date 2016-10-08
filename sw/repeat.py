@@ -7,10 +7,10 @@
 import t3
 
 COMBINATIONS = {
-    0: ((1, 1, 1,  0, 1, 0,  0, 0, 0), t3.hls_to_rgb(0, 0.3, 0.9)),
-    1: ((1, 0, 0,  1, 1, 0,  1, 0, 0), t3.hls_to_rgb(0.3, 0.3, 0.9)),
-    2: ((0, 0, 0,  0, 1, 0,  1, 1, 1), t3.hls_to_rgb(0.6, 0.3, 0.9)),
-    3: ((0, 0, 1,  0, 1, 1,  0, 0, 1), t3.hls_to_rgb(0.14, 0.3, 0.9)),
+    0: ((1, 1, 1,  0, 1, 0,  0, 0, 0), t3.hls_to_rgb(0, 0.2, 0.9)),
+    1: ((1, 0, 0,  1, 1, 0,  1, 0, 0), t3.hls_to_rgb(0.3, 0.2, 0.9)),
+    2: ((0, 0, 0,  0, 1, 0,  1, 1, 1), t3.hls_to_rgb(0.6, 0.2, 0.9)),
+    3: ((0, 0, 1,  0, 1, 1,  0, 0, 1), t3.hls_to_rgb(0.14, 0.2, 0.9)),
 }
 
 
@@ -55,7 +55,7 @@ def main():
         yield 0.5
         for c in combination:
             display_piece(c)
-            yield 0.5
+            yield 0.4
             fill(0, 0, 0)
             yield 0.2
 
@@ -90,4 +90,4 @@ def main():
             fill(0, 0, 0)
             yield 0.5
             hue = t3.random_uniform(0.23, 0.37)
-            yield from flash(*t3.hls_to_rgb(hue, 0.4, 0.5))
+            yield from flash(0, 70, 0)
