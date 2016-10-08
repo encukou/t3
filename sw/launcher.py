@@ -1,5 +1,6 @@
 import t3
 import sys
+import machine
 
 if not hasattr(t3.machine, '_t3_emulated'):
     import network
@@ -95,16 +96,9 @@ def main_menu():
             t3.display[i] = pixel
         yield wait
 
-    t3.set_button_handler(None)
-    t3.start_task(go(selected_name))
-
-def go(name):
-    del sys.modules['launcher']
-    ns = {}
-    module = __import__(name)
-    t3.start_task(module.main())
-    return
-    yield
+    with open('selected-game', 'w') as f:
+        f.write(selected_name)
+    machine.reset()
 
 
 # 1/5  000000 000000 000000  000000 000000 000000  000000 000000 000000

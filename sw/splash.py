@@ -66,5 +66,4 @@ def splash():
     yield 1
 
     import launcher
-    del sys.modules['splash']
     t3.start_task(launcher.main_menu())
