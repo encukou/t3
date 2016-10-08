@@ -22,13 +22,13 @@ FACES = {
 
 def main():
     num_values = 6
-    velocity = 0
+    velocity = 2
     value = 0
     while True:
         if t3.a.value:
             velocity = 2
         velocity *= 0.97
-        if velocity < 0.02:
+        if velocity < 0.05:
             velocity = 0
         value += velocity
         value %= num_values
