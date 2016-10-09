@@ -1,10 +1,16 @@
-import urandom
 import time
 import machine
 import sys
 
 from machine import Pin
 from neopixel import NeoPixel
+
+try:
+    from uos import urandom as rand_bytes
+except ImportError:
+    import urandom as urandom
+    def rand_bytes(n):
+        return bytes([urandom.getrandbits(8) for i in range(n)])
 
 # Display
 
@@ -72,12 +78,12 @@ def hls_to_rgb(h, l, s):
 # Random helper
 
 def random_uniform(a, b):
-    byte = urandom.getrandbits(8)
+    byte = rand_bytes(1)[0]
     return a + (byte / 256) * (b - a)
 
 def randrange(a, b):
     values = range(a, b)
-    byte = urandom.getrandbits(8)
+    byte = rand_bytes(1)[0]
     return values[byte % len(values)]
 
 # Listdir helper
