@@ -2,7 +2,7 @@ import time
 import machine
 import sys
 
-from machine import Pin
+from machine import Pin, PWM
 from neopixel import NeoPixel
 
 try:
@@ -198,3 +198,16 @@ class _ButtonInfo:
 def set_button_handler(handler):
     global _button_handler
     _button_handler = handler
+
+
+# Sound
+
+_pwm = PWM(Pin(15, Pin.OUT))
+
+def tone(pitch, duty=512):
+    if pitch == 0:
+        _pwm.deinit()
+    else:
+        _pwm.init(pitch, duty)
+
+tone(0)

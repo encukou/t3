@@ -28,3 +28,37 @@ class Pin:
     def value(self):
         assert self._mode == Pin.IN
         return self._num not in _pressed_button_pins
+
+
+class PWM:
+    def __init__(self, pin):
+        assert pin._num == 15
+        self._freq = 0
+        self._duty = 0
+
+    def init(self, freq, duty):
+        self._freq = freq
+        self._duty = duty
+        self._update()
+
+    def freq(self, freq=None):
+        if freq == None:
+            return self._freq
+        else:
+            self._freq = freq
+            self._update()
+
+    def duty(self, duty=None):
+        if duty == None:
+            return self._duty
+        else:
+            self._duty = duty
+            self._update()
+
+    def deinit(self):
+        self._freq = 0
+        self._duty = 0
+        self._update()
+
+    def _update(self):
+        print('@', self._freq, self._duty)

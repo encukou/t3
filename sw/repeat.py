@@ -7,10 +7,10 @@
 import t3
 
 COMBINATIONS = {
-    0: ((1, 1, 1,  0, 1, 0,  0, 0, 0), t3.hls_to_rgb(0, 0.2, 0.9)),
-    1: ((1, 0, 0,  1, 1, 0,  1, 0, 0), t3.hls_to_rgb(0.3, 0.2, 0.9)),
-    2: ((0, 0, 0,  0, 1, 0,  1, 1, 1), t3.hls_to_rgb(0.6, 0.2, 0.9)),
-    3: ((0, 0, 1,  0, 1, 1,  0, 0, 1), t3.hls_to_rgb(0.14, 0.2, 0.9)),
+    0: ((1, 1, 1,  0, 1, 0,  0, 0, 0), 196, t3.hls_to_rgb(0, 0.2, 0.9)),  # G
+    1: ((1, 0, 0,  1, 1, 0,  1, 0, 0), 262, t3.hls_to_rgb(0.3, 0.2, 0.9)),
+    2: ((0, 0, 0,  0, 1, 0,  1, 1, 1), 330, t3.hls_to_rgb(0.6, 0.2, 0.9)),
+    3: ((0, 0, 1,  0, 1, 1,  0, 0, 1), 391, t3.hls_to_rgb(0.14, 0.2, 0.9)),
 }
 
 
@@ -37,12 +37,13 @@ def get_input():
     return -1
 
 def display_piece(c):
-    onoff, color = COMBINATIONS[c]
+    onoff, note, color = COMBINATIONS[c]
     for i, x in enumerate(onoff):
         if x:
             t3.display[i] = color
         else:
             t3.display[i] = 0, 0, 0
+    t3.tone(note)
 
 def main():
     yield from flash(30, 30, 30)
@@ -57,6 +58,7 @@ def main():
             display_piece(c)
             yield 0.4
             fill(0, 0, 0)
+            t3.tone(0)
             yield 0.2
 
         # Expect combination
@@ -74,6 +76,7 @@ def main():
                 if inp != c:
                     while get_input() != -1:
                         yield 0.05
+                    t3.tone(0)
                     fill(0, 0, 0)
                     yield 0.1
                     yield from flash(100, 0, 0)
@@ -83,6 +86,7 @@ def main():
                 else:
                     while get_input() != -1:
                         yield 0.05
+                    t3.tone(0)
                     break
             if not combination:
                 break
