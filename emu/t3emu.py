@@ -8,12 +8,10 @@ import fcntl
 import os
 import time
 
+import click
 import pyglet
 import pyglet.window
 from pyglet import gl
-
-sys.path.clear()
-sys.path.append('.')
 
 _strip = [(0, 0, 0)] * 9
 _pressed_button_pins = set()
@@ -108,7 +106,7 @@ def tick(dt):
     if end_loop:
         window.close()
 
-def do_fork(delay=0):
+def do_fork(micropython_binary, delay=0):
     # Need to open MicropPython with bi-directional communication
     # (button state in; LED state out). Since MicroPython doesn't have threads,
     # the inward pipe needs to be opened in nonblocking mode.
@@ -142,24 +140,26 @@ def do_fork(delay=0):
     in_file = os.fdopen(in_write, 'wb')
     out_file = os.fdopen(out_read, 'rb')
 
-def run_main():
-    while True:
-        try:
-            line = out_file.readline()
-        except BrokenPipeError:
-             line = b''
-        if line == b'':
-            if os.path.exists('selected-game'):
-                print('# Resetting')
-                do_fork(delay=1)
-                continue
+def run_main_factory(micropython_binary):
+    def run_main():
+        while True:
+            try:
+                line = out_file.readline()
+            except BrokenPipeError:
+                line = b''
+            if line == b'':
+                if os.path.exists('selected-game'):
+                    print('# Resetting')
+                    do_fork(micropython_binary=micropython_binary, delay=1)
+                    continue
+                else:
+                    pyglet.app.exit()
+                    break
+            if line.startswith(b'* '):
+                _strip[:] = ast.literal_eval(line[2:].decode('ascii'))
             else:
-                pyglet.app.exit()
-                break
-        if line.startswith(b'* '):
-            _strip[:] = ast.literal_eval(line[2:].decode('ascii'))
-        else:
-            print('*', line)
+                print('*', line)
+    return run_main
 
 
 @window.event
@@ -180,12 +180,42 @@ def on_key_release(key, mod):
         in_file.write('-{}\n'.format(pin).encode('ascii'))
         in_file.flush()
 
-pyglet.clock.schedule_interval(tick, 1/60)
+def main(*, micropython_binary='micropython'):
+    pyglet.clock.schedule_interval(tick, 1/60)
 
-do_fork()
+    do_fork(micropython_binary=micropython_binary)
 
-thread = threading.Thread(target=run_main)
-thread.daemon = True
-thread.start()
+    thread = threading.Thread(target=run_main_factory(micropython_binary))
+    thread.daemon = True
+    thread.start()
 
-pyglet.app.run()
+    pyglet.app.run()
+
+click.core._verify_python3_env = lambda: None
+@click.command()
+@click.option('--micropython-binary', envvar='MICROPYTHON_BINARY',
+              default='micropython',
+              help='The MicroPython binary to use '
+                '[env variable: $MICROPYTHON_BINARY; '
+                'default: micropython] '
+             )
+@click.argument('game', default=None, required=False)
+def cli(game, micropython_binary):
+    """Run the T3 "emulator"
+
+    GAME: Name of the game to launch. If not given, the launcher is started.
+    """
+    print(game)
+    if game:
+        with open('selected-game', 'w') as f:
+            f.write(game)
+    else:
+        try:
+            os.unlink('selected-game')
+        except FileNotFoundError:
+            pass
+
+    main(micropython_binary=micropython_binary)
+
+if __name__ == '__main__':
+    cli()

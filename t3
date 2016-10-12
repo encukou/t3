@@ -1,10 +1,4 @@
 #! /bin/bash -ex
 
-if [ "$1" == "" ]; then
-    rm -f sw/selected-game
-else
-    echo "$1" > sw/selected-game
-fi
-
 cd sw
-PYTHONPATH=../emu python3 -m t3emu
+PYTHONPATH=../emu python3 -m t3emu "$@"
