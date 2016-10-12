@@ -21,6 +21,17 @@ Currently there is 1 “game” available:
 Simulates a 6-sided die. Press A to re-roll.
 When ready, the result is shown colorfully.
 
+### Repeat
+
+The game shows a sequnce of directions (left – yellow; up – red; right – green;
+down – blue); then a single white pixel in the middle.
+Initially, the sequence just contains one direction.
+
+The player's job is to repeat the sequence.
+If they're successful, a new direction is added to the sequence, and a new
+turn begins.
+If they fail, the sequence is reset, and the game starts over.
+
 ## The emulator
 
 A rudimentary emulator is included to aid development and to run games without
