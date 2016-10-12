@@ -50,6 +50,8 @@ Note: the emulator won't work on Windows without major changes.)
 Run the included `t3` script to launch the emulator.
 Control it with arrow keys, and Z/X for the A/B buttons.
 
+The emulator doesn't currently emit sound.
+
 ## API
 
 Each T3 cartridge starts with a "magic comment" and selection-screen animation,
