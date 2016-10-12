@@ -6,6 +6,7 @@ import subprocess
 import ast
 import fcntl
 import os
+import time
 
 import pyglet
 import pyglet.window
@@ -107,46 +108,58 @@ def tick(dt):
     if end_loop:
         window.close()
 
-# Need to open MicropPython with bi-directional communication
-# (button state in; LED state out). Since MicroPython doesn't have threads,
-# the inward pipe needs to be opened in nonblocking mode.
-# There's no way a pipe can be switched to non-blocking mode MicroPython,
-# and subprocess doesn't provide a way to create non-blocking pipes.
-# So let's do what subprocess does manually: pipe, fork, dup2, and execvpe.
+def do_fork(delay=0):
+    # Need to open MicropPython with bi-directional communication
+    # (button state in; LED state out). Since MicroPython doesn't have threads,
+    # the inward pipe needs to be opened in nonblocking mode.
+    # There's no way a pipe can be switched to non-blocking mode MicroPython,
+    # and subprocess doesn't provide a way to create non-blocking pipes.
+    # So let's do what subprocess does manually: pipe, fork, dup2, and execvpe.
 
-in_read, in_write = os.pipe()
-out_read, out_write = os.pipe()
+    global in_file, out_file
 
-sys.stdin.flush()
-sys.stdout.flush()
-if os.fork() == 0:
-    os.close(in_write)
-    os.close(out_read)
+    in_read, in_write = os.pipe()
+    out_read, out_write = os.pipe()
 
-    fl = fcntl.fcntl(in_read, fcntl.F_GETFL)
-    fcntl.fcntl(in_read, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+    sys.stdin.flush()
+    sys.stdout.flush()
+    if os.fork() == 0:
+        os.close(in_write)
+        os.close(out_read)
 
-    os.dup2(in_read, 0)
-    os.dup2(out_write, 1)
-    print('# Fork started')
-    os.execvpe('micropython', ['micropython', '-m', 'main'],
-               {'MICROPYPATH': '.:../emu'})
+        fl = fcntl.fcntl(in_read, fcntl.F_GETFL)
+        fcntl.fcntl(in_read, fcntl.F_SETFL, fl | os.O_NONBLOCK)
 
-os.close(in_read)
-os.close(out_write)
-in_file = os.fdopen(in_write, 'wb')
-out_file = os.fdopen(out_read, 'rb')
+        os.dup2(in_read, 0)
+        os.dup2(out_write, 1)
+        time.sleep(delay)
+        print('# Fork started')
+        os.execvpe('micropython', ['micropython', '-m', 'main'],
+                {'MICROPYPATH': '.:../emu'})
+
+    os.close(in_read)
+    os.close(out_write)
+    in_file = os.fdopen(in_write, 'wb')
+    out_file = os.fdopen(out_read, 'rb')
 
 def run_main():
     while True:
-        line = out_file.readline()
+        try:
+            line = out_file.readline()
+        except BrokenPipeError:
+             line = b''
         if line == b'':
-            break
+            if os.path.exists('selected-game'):
+                print('# Resetting')
+                do_fork(delay=1)
+                continue
+            else:
+                pyglet.app.exit()
+                break
         if line.startswith(b'* '):
             _strip[:] = ast.literal_eval(line[2:].decode('ascii'))
         else:
             print('*', line)
-    end_loop = True
 
 
 @window.event
@@ -168,6 +181,8 @@ def on_key_release(key, mod):
         in_file.flush()
 
 pyglet.clock.schedule_interval(tick, 1/60)
+
+do_fork()
 
 thread = threading.Thread(target=run_main)
 thread.daemon = True

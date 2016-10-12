@@ -62,3 +62,6 @@ class PWM:
 
     def _update(self):
         print('@', self._freq, self._duty)
+
+def reset():
+    raise SystemExit(0)

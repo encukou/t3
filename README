@@ -49,6 +49,7 @@ Note: the emulator won't work on Windows without major changes.)
 
 Run the included `t3` script to launch the emulator.
 Control it with arrow keys, and Z/X for the A/B buttons.
+To run a particular game directly, pass its name as a command-line argument.
 
 The emulator doesn't currently emit sound.
 
