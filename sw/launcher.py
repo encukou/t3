@@ -75,25 +75,22 @@ def main_menu():
     current_item = items[0].get_next()
     current_frame = -1
 
-    selected_name = None
-    def button_handler(buttons):
-        nonlocal current_item, selected_name
+    while True:
+        current_frame += 1
+        current_frame %= len(current_item.data)
+        wait, pixels = current_item.data[current_frame]
+        for i, pixel in enumerate(pixels):
+            t3.display[i] = pixel
+
+        buttons = yield wait
+
         if buttons.pressed[t3.left]:
             current_item = current_item.get_prev()
         if buttons.pressed[t3.right]:
             current_item = current_item.get_next()
         if buttons.pressed[t3.a]:
             selected_name = current_item.name[:-3]
-
-    t3.set_button_handler(button_handler)
-
-    while not selected_name:
-        current_frame += 1
-        current_frame %= len(current_item.data)
-        wait, pixels = current_item.data[current_frame]
-        for i, pixel in enumerate(pixels):
-            t3.display[i] = pixel
-        yield wait
+            break
 
     with open('selected-game', 'w') as f:
         f.write(selected_name)

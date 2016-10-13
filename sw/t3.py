@@ -1,6 +1,5 @@
 import time
 import machine
-import sys
 
 from machine import Pin, PWM
 from neopixel import NeoPixel
@@ -100,61 +99,110 @@ except ImportError:
 _task_i = 0
 _tasks = []
 
-def start_task(gen):
+TASK_TIME = const(0)
+TASK_NUM = const(1)
+TASK_START = const(2)
+TASK_BTN_TRIGGER = const(3)
+TASK_BTN_MASK = const(4)
+TASK_CORO = const(5)
+
+def start_task(coro):
     global _task_i
-    _tasks.append([0, _task_i, gen])
+    next(coro)
+    _tasks.append([0, _task_i, time.ticks_ms(), 0, 0, coro])
     _task_i += 1
 
-_stdin_line = ''
-_prev_buttons = 0
-_button_handler = None
-
-def _sys_task():
-    global _stdin_line
-    global _prev_buttons
-    global _pressed_buttons
-    while True:
-        display.write_now()
-        yield 1/60
-
-        if hasattr(machine, '_t3_emulated'):
-            rd = sys.stdin.read(1)
-            if rd is not None:
-                _stdin_line += rd
-                if '\n' in _stdin_line:
-                    cmd, sep, _stdin_line = _stdin_line.partition('\n')
-                    print('>', cmd)
-                    if cmd.startswith('+'):
-                        _pressed_buttons |= 1 << _button_map[int(cmd[1:])]
-                    elif cmd.startswith('-'):
-                        _pressed_buttons &= ~(1 << _button_map[int(cmd[1:])])
-        else:
-            _pressed_buttons = 0
-            for btn in a, b, left, right, up, down:
-                if not btn.pin.value():
-                    _pressed_buttons |= btn.mask
-
-        now_buttons = _pressed_buttons
-        button_change = now_buttons ^ _prev_buttons
-        if button_change and _button_handler:
-            _button_handler(_ButtonChangeInfo(_prev_buttons, now_buttons))
-        _prev_buttons = now_buttons
-
-start_task(_sys_task())
-
 def run():
+    global _pressed_buttons
+    display._np.write()
+    ticks_last = draw_last = btn_last = time.ticks_ms()
+    last_buttons = 0
     while _tasks:
+        ticks_now = time.ticks_ms()
+        diff = time.ticks_diff(ticks_last, ticks_now)
+        ticks_last = ticks_now
+
+        for task in _tasks:
+            task[TASK_TIME] -= diff
+
+        if time.ticks_diff(draw_last, ticks_now) > 50:
+            draw_last = ticks_now
+            display._np.write()
+            continue
+
+        if time.ticks_diff(btn_last, ticks_now) > 20:
+            btn_last = ticks_now
+            if hasattr(machine, '_t3_emulated'):
+                machine._update_buttons()
+            _pressed_buttons = 0
+            mask = 0
+            for btn in a, b, left, right, up, down:
+                if btn.pin.value():
+                    if last_buttons & btn.mask:
+                        mask |= btn.mask << _btn_count
+                else:
+                    _pressed_buttons |= btn.mask
+                    if (~last_buttons) & btn.mask:
+                        mask |= btn.mask
+            last_buttons = _pressed_buttons
+
+            if mask:
+                for task in _tasks:
+                    if task[TASK_BTN_TRIGGER] & mask and task[TASK_TIME] > 0:
+                        task[TASK_TIME] = 0
+                    task[TASK_BTN_MASK] |= mask
+
         _tasks.sort()
-        wait, i, task = _tasks[0]
-        time.sleep(wait)
-        for entry in _tasks:
-            entry[0] -= wait
-        try:
-            wait = next(task)
-        except StopIteration:
-            _tasks.pop(0)
+        task = _tasks[0]
+        wait = task[TASK_TIME]
+        if wait > 0:
+            if time.ticks_diff(draw_last, ticks_now) > 16:
+                draw_last = ticks_now
+                display._np.write()
+            else:
+                if wait > 10:
+                    wait = 10
+                time.sleep_ms(wait)
+            continue
         else:
-            _tasks[0][0] = wait
+            start = task[TASK_START]
+            coro = task[TASK_CORO]
+            btn_mask = task[TASK_BTN_MASK]
+            btn_mask |= _pressed_buttons << (2 * _btn_count)
+            ticks = time.ticks_diff(start, ticks_now)
+            try:
+                wait = coro.send(_YieldInfo(ticks, btn_mask))
+            except StopIteration:
+                _tasks.pop(0)
+            else:
+                if isinstance(wait, (int, float)):
+                    task[TASK_TIME] = int(wait * 1000)
+                    task[TASK_BTN_TRIGGER] = 0
+                else:
+                    task[TASK_TIME] = wait.timeout_ms
+                    task[TASK_BTN_TRIGGER] = wait.btn_mask
+                task[TASK_BTN_MASK] = 0
+
+class _YieldInfo:
+    def __init__(self, elapsed_ms, mask):
+        self.elapsed_ms = elapsed_ms
+        self._mask = mask
+
+    @property
+    def pressed(self):
+        return _ButtonInfo(self._mask)
+
+    @property
+    def released(self):
+        return _ButtonInfo(self._mask >> _btn_count)
+
+    @property
+    def held(self):
+        return _ButtonInfo(self._mask >> (_btn_count * 2))
+
+    @property
+    def elapsed(self):
+        return self.elapsed_ms / 1000
 
 # Buttons
 
@@ -178,15 +226,7 @@ up = _Button(2, 12)
 down = _Button(3, 14)
 a = _Button(4, 0)
 b = _Button(5, 2)
-
-class _ButtonChangeInfo:
-    def __init__(self, prev, now):
-        self._prev = prev
-        self._now = now
-        changes = prev ^ now
-        self.pressed = _ButtonInfo(changes & now)
-        self.released = _ButtonInfo(changes & ~now)
-        self.held = _ButtonInfo(now)
+_btn_count = 6
 
 class _ButtonInfo:
     def __init__(self, value):
@@ -195,18 +235,18 @@ class _ButtonInfo:
     def __getitem__(self, button):
         return bool(self._value & button.mask)
 
-class _ButtonHandlerContext:
-    def __enter__(self):
-        pass
+class wait_for_input:
+    timeout_ms = 2147483648
+    btn_mask = -1
 
-    def __exit__(self, *args):
-        set_button_handler(None)
-
-def set_button_handler(handler):
-    global _button_handler
-    _button_handler = handler
-    return _ButtonHandlerContext()
-
+    def __init__(self, *, timeout=None, buttons=None):
+        if timeout is not None:
+            self.timeout_ms = int(timeout * 1000)
+        if buttons is not None:
+            self.btn_mask = 0
+            for btn in buttons:
+                self.btn_mask |= btn.mask
+                self.btn_mask |= btn.mask << _btn_count
 
 # Sound
 

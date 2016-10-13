@@ -4,8 +4,6 @@ try:
 except ImportError:
     from uos import unlink
 
-t3.start_task(t3._sys_task())
-
 try:
     f = open('selected-game')
 except OSError:

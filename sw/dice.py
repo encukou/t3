@@ -27,8 +27,8 @@ def main():
     while True:
         if t3.a.value:
             velocity = 2
-        velocity *= 0.97
-        if velocity < 0.05:
+        velocity *= 0.9
+        if velocity < 0.005:
             velocity = 0
         value += velocity
         value %= num_values
@@ -36,9 +36,9 @@ def main():
         for i in range(8, -1, -1):
             if (face >> i) & 1:
                 if velocity:
-                    t3.display[i] = t3.hls_to_rgb(value/10, 0.15, 0.1)
+                    t3.display[i] = t3.hls_to_rgb(int(value)/10, 0.15, 0.1)
                 else:
-                    t3.display[i] = t3.hls_to_rgb(value/10, 0.26, 0.9)
+                    t3.display[i] = t3.hls_to_rgb(int(value)/10, 0.26, 0.9)
             else:
                 t3.display[i] = 0, 0, 0
-        yield 0.01
+        yield 1/30

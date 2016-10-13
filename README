@@ -72,11 +72,24 @@ This sequence is repeated on the game selection screen.
 The rest of the cartridge file is a Python module, which must define
 a generator iterator called `main`, which implements the game.
 Whenever the function `yield`s a number, it is suspended for that many seconds.
+Alternately, it can yield `t3.wait_for_input()` to wait for button events.
 Display and input updates happen when `main` is suspended, so it is necessary
 to `yield` often.
 
-The module may import the `t3` module, and use the following functionality
-from it:
+The `yield` expression result is a *wait info* object that exposes how long
+the wait actually took (which will usually be slightly more than requested),
+and which buttons were/are pressed:
+
+* `info.elapsed`: The elapsed time, in seconds
+* `state.pressed[btn]`: true for buttons that were pressed during the wait
+* `state.released[btn]`: true for buttons that were released during the wait
+* `state.held[btn]`: true for buttons that are currently pressed
+
+The button-related attributes should be indexed by button objects such
+as `t3.left` – see below.
+
+The cartridge module may import the `t3` module, and use the following
+functionality from it:
 
 ### `t3.display[i]`
 
@@ -117,6 +130,11 @@ In the emulator, this chooses from a fixed sequence.
 Starts a new task, which should be a generator iterator that yields a number
 whenever it pauses execution – same as `main`.
 
+### `t3.wait_for_input()`
+
+When yielded from `main` or a coroutine started with `t3.start_task`,
+waits until the next button press or release.
+
 ### `t3.left`, `t3.right`, `t3.up`, `t3.down`, `t3.a`, `t3.b`
 
 The buttons, as objects of class `t3._Button`.
@@ -125,24 +143,6 @@ You should never create new instances of this class.
 ### `t3._Button.value`
 
 The value of this Button: False for not pressed; True for pressed.
-
-### `t3.set_button_handler(func)`
-
-Registers a function as the current button handler. Whenever the state of
-a button changes, this function is called with a single *button state*
-argument.
-
-The button state has several dict-like attributes, which can be indexed by
-`_Button` objects (e.g. `t3.left`):
-
-* `state.pressed[btn]`: true for buttons that were just pressed
-* `state.released[btn]`: true for buttons that were just released
-* `state.held[btn]`: true for buttons that are currently pressed
-
-Call `set_button_handler(None)` to unset the button handler.
-
-The `set_button_handler` function returns a context manager that will
-automatically unset the handler at the end of a `with` statement.
 
 ### `t3.tone(pitch, duty=512)`
 

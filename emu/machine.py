@@ -1,3 +1,4 @@
+import sys
 
 _t3_emulated = True
 
@@ -65,3 +66,18 @@ class PWM:
 
 def reset():
     raise SystemExit(0)
+
+
+_stdin_line = ''
+def _update_buttons():
+    global _stdin_line
+    rd = sys.stdin.read(256)
+    if rd is not None:
+        _stdin_line += rd
+        if '\n' in _stdin_line:
+            cmd, sep, _stdin_line = _stdin_line.partition('\n')
+            print('>', cmd)
+            if cmd.startswith('+'):
+                _pressed_button_pins.add(int(cmd[1:]))
+            elif cmd.startswith('-'):
+                _pressed_button_pins.discard(int(cmd[1:]))

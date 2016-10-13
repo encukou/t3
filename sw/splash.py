@@ -25,6 +25,7 @@ def reddish():
     return t3.hls_to_rgb(hue, sat, lightness)
 
 def splash():
+    yield
     t3.start_task(anim_starter(t3.display.anim_pixel, (
         args((1, 0), *bluish()),
         args((0, 0), *bluish()),
