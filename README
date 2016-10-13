@@ -32,6 +32,17 @@ If they're successful, a new direction is added to the sequence, and a new
 turn begins.
 If they fail, the sequence is reset, and the game starts over.
 
+### Tic Tac
+
+First, set the game up: press left/right to choose Human vs. Computer,
+or Human vs. Human. You can also press up/down to choose a player's color,
+and B to select if the human or computer goes first.
+When ready, press A to start.
+
+Players take turns putting their colors on the board.
+The first on to get 3 in a row – horizontally, vertically, or diagonally –
+wins. In case of tie, the game is repeated.
+
 ## The emulator
 
 A rudimentary emulator is included to aid development and to run games without
