@@ -16,10 +16,62 @@ from pyglet import gl
 _strip = [(0, 0, 0)] * 9
 _pressed_button_pins = set()
 
-window = pyglet.window.Window(
-    width=500, height=300,
-    style=pyglet.window.Window.WINDOW_STYLE_TOOL)
-window.set_minimum_size(50, 50)
+class EmulatorWindow(pyglet.window.Window):
+    def __init__(self, **kwargs):
+        kwargs.setdefault('width', 500)
+        kwargs.setdefault('height', 300)
+        kwargs.setdefault('style', pyglet.window.Window.WINDOW_STYLE_TOOL)
+        super().__init__(**kwargs)
+        self.set_minimum_size(50, 50)
+
+    def on_key_press(self, key, mod):
+        pin = KEY_TO_PIN_MAP.get(key)
+        if pin is not None:
+            _pressed_button_pins.add(pin)
+            in_file.write('+{}\n'.format(pin).encode('ascii'))
+            in_file.flush()
+        if key == pyglet.window.key.C:
+            self.close()
+
+    def on_key_release(self, key, mod):
+        pin = KEY_TO_PIN_MAP.get(key)
+        if pin is not None:
+            _pressed_button_pins.discard(pin)
+            in_file.write('-{}\n'.format(pin).encode('ascii'))
+            in_file.flush()
+
+    def on_draw(self):
+        self.clear()
+        w, sx = _dim(self.width, self.height)
+        h, sy = _dim(self.height, self.width)
+        for i, color in enumerate(_strip):
+            y, x = divmod(i, 3)
+            px = sx+(2-x)*w
+            py = sy+(2-y)*h
+
+            gl.glColor3f(*((c/255)**0.5 for c in color))
+            draw_rect(px, py, w-1, h-1)
+
+            if sum(color) > 255:
+                textcolor = (0, 0, 0, 100)
+            else:
+                textcolor = (255, 255, 255, 100)
+            pyglet.text.Label(str(i), color=textcolor, x=px, y=py+1).draw()
+
+        def _draw_button(x, y, r, pin):
+            with pushed_matrix():
+                gl.glTranslatef(x, y, 0)
+                gl.glRotatef(45 + r, 0, 0, 1)
+                if pin in _pressed_button_pins:
+                    gl.glColor3f(0.5, 0.7, 0.6)
+                else:
+                    gl.glColor3f(0.1, 0.1, 0.1)
+                draw_rect(1, 1, w/2, w/2)
+
+        for i, pin in enumerate([12, 13, 14, 4]):
+            _draw_button(sx-w, sy+h*1.5, -i*90, pin)
+        for i, pin in enumerate([0, 2]):
+            _draw_button(sx+w*3.5, sy+h*1.6, (i+2)*90, pin)
 
 KEY_TO_PIN_MAP = {
     pyglet.window.key.UP: 12,
@@ -65,46 +117,11 @@ def _dim(dimension, other):
         start = (dimension - MAX) / 2
         return MAX // 3, start
 
-@window.event
-def on_draw():
-    window.clear()
-    w, sx = _dim(window.width, window.height)
-    h, sy = _dim(window.height, window.width)
-    for i, color in enumerate(_strip):
-        y, x = divmod(i, 3)
-        px = sx+(2-x)*w
-        py = sy+(2-y)*h
-
-        gl.glColor3f(*((c/255)**0.5 for c in color))
-        draw_rect(px, py, w-1, h-1)
-
-        if sum(color) > 255:
-            textcolor = (0, 0, 0, 100)
-        else:
-            textcolor = (255, 255, 255, 100)
-        pyglet.text.Label(str(i), color=textcolor, x=px, y=py+1).draw()
-
-    def _draw_button(x, y, r, pin):
-        with pushed_matrix():
-            gl.glTranslatef(x, y, 0)
-            gl.glRotatef(45 + r, 0, 0, 1)
-            if pin in _pressed_button_pins:
-                gl.glColor3f(0.5, 0.7, 0.6)
-            else:
-                gl.glColor3f(0.1, 0.1, 0.1)
-            draw_rect(1, 1, w/2, w/2)
-
-    for i, pin in enumerate([12, 13, 14, 4]):
-        _draw_button(sx-w, sy+h*1.5, -i*90, pin)
-    for i, pin in enumerate([0, 2]):
-        _draw_button(sx+w*3.5, sy+h*1.6, (i+2)*90, pin)
-
 
 end_loop = False
 
 def tick(dt):
-    if end_loop:
-        window.close()
+    pass
 
 def do_fork(micropython_binary, delay=0):
     # Need to open MicropPython with bi-directional communication
@@ -162,25 +179,9 @@ def run_main_factory(micropython_binary):
     return run_main
 
 
-@window.event
-def on_key_press(key, mod):
-    pin = KEY_TO_PIN_MAP.get(key)
-    if pin is not None:
-        _pressed_button_pins.add(pin)
-        in_file.write('+{}\n'.format(pin).encode('ascii'))
-        in_file.flush()
-    if key == pyglet.window.key.C:
-        window.close()
-
-@window.event
-def on_key_release(key, mod):
-    pin = KEY_TO_PIN_MAP.get(key)
-    if pin is not None:
-        _pressed_button_pins.discard(pin)
-        in_file.write('-{}\n'.format(pin).encode('ascii'))
-        in_file.flush()
-
 def main(*, micropython_binary='micropython'):
+    EmulatorWindow()
+
     pyglet.clock.schedule_interval(tick, 1/60)
 
     do_fork(micropython_binary=micropython_binary)
@@ -192,7 +193,7 @@ def main(*, micropython_binary='micropython'):
     pyglet.app.run()
 
 click.core._verify_python3_env = lambda: None
-@click.command()
+@click.command(context_settings=dict(help_option_names=['-h', '--help']))
 @click.option('--micropython-binary', envvar='MICROPYTHON_BINARY',
               default='micropython',
               help='The MicroPython binary to use '
