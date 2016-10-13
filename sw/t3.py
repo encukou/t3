@@ -195,9 +195,17 @@ class _ButtonInfo:
     def __getitem__(self, button):
         return bool(self._value & button.mask)
 
+class _ButtonHandlerContext:
+    def __enter__(self):
+        pass
+
+    def __exit__(self, *args):
+        set_button_handler(None)
+
 def set_button_handler(handler):
     global _button_handler
     _button_handler = handler
+    return _ButtonHandlerContext()
 
 
 # Sound

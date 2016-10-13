@@ -141,6 +141,9 @@ The button state has several dict-like attributes, which can be indexed by
 
 Call `set_button_handler(None)` to unset the button handler.
 
+The `set_button_handler` function returns a context manager that will
+automatically unset the handler at the end of a `with` statement.
+
 ### `t3.tone(pitch, duty=512)`
 
 Starts playing a tone of the given pitch, using a rectangular wave.
