@@ -40,9 +40,9 @@ The emulator is not accurate--it runs with the speed and memory of the host
 computer--but it's useful for validating high-level logic.
 
 To run the emulator, you will need Python 3.5+ *and* MicroPython, plus the
-Pyglet library. On Fedora, you can install the prerequisites with:
+Pyglet and Click libraries. On Fedora, you can install the prerequisites with:
 
-    sudo dnf install python3 micropython python3-pyglet
+    sudo dnf install python3 micropython python3-pyglet python3-click
 
 (Please contribute instructions for other systems.
 Note: the emulator won't work on Windows without major changes.)
