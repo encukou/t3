@@ -13,7 +13,7 @@ import pyglet
 import pyglet.window
 from pyglet import gl
 
-_strip = [(0, 0, 0)] * 9
+_strip = bytearray(9 * 3)
 _pressed_button_pins = set()
 
 class EmulatorWindow(pyglet.window.Window):
@@ -44,10 +44,13 @@ class EmulatorWindow(pyglet.window.Window):
         self.clear()
         w, sx = _dim(self.width, self.height)
         h, sy = _dim(self.height, self.width)
-        for i, color in enumerate(_strip):
+        for i in range(9):
             y, x = divmod(i, 3)
             px = sx+(2-x)*w
             py = sy+(2-y)*h
+
+            g, r, b = _strip[i*3:i*3+3]
+            color = r, g, b
 
             gl.glColor3f(*((c/255)**0.5 for c in color))
             draw_rect(px, py, w-1, h-1)

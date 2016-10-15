@@ -2,7 +2,7 @@ import time
 import machine
 
 from machine import Pin, PWM
-from neopixel import NeoPixel
+from esp import neopixel_write
 
 try:
     from uos import urandom as rand_bytes
@@ -17,35 +17,41 @@ def _get_index(subscript):
     try:
         x, y = subscript
     except TypeError:
-        return int(subscript)
+        return int(subscript) * 3
     else:
-        return 2-x + 3*y
+        return (2-x + 3*y) * 3
 
 
 class _Display:
     def __init__(self):
-        self._np = NeoPixel(Pin(5, Pin.OUT), 9)
+        self._pin = Pin(5, Pin.OUT)
+        self._buf = bytearray(9 * 3)
 
     def __setitem__(self, subscript, value):
-        self._np[_get_index(subscript)] = value
+        r, g, b = value
+        idx = _get_index(subscript)
+        self._buf[idx:idx+3] = bytes((g, r, b))
 
     def __getitem__(self, subscript):
-        return self._np[_get_index(subscript)]
+        idx = _get_index(subscript)
+        g, r, b = self._buf[idx:idx+3]
+        return r, g, b
 
     def anim_pixel(self, subscript, r, g, b, steps=20):
-        index = _get_index(subscript)
-        np = self._np
-        start = np[index]
+        start = self[subscript]
         end = r, g, b
         for i in range(0, steps):
             j = steps-i
-            np[index] = [int((s * j + e * i) / steps)
-                         for s, e in zip(start, end)]
+            self[subscript] = [int((s * j + e * i) / steps)
+                               for s, e in zip(start, end)]
             yield 1/60
-        np[index] = end
+        self[subscript] = end
 
-    def write_now(self):
-        self._np.write()
+    def show_image(self, data):
+        self._buf[:] = data
+
+    def _write(self):
+        neopixel_write(self._pin, self._buf, True)
 
 display = _Display()
 
@@ -114,7 +120,7 @@ def start_task(coro):
 
 def run():
     global _pressed_buttons
-    display._np.write()
+    display._write()
     ticks_last = draw_last = btn_last = time.ticks_ms()
     last_buttons = 0
     while _tasks:
@@ -127,7 +133,7 @@ def run():
 
         if time.ticks_diff(draw_last, ticks_now) > 50:
             draw_last = ticks_now
-            display._np.write()
+            display._write()
             continue
 
         if time.ticks_diff(btn_last, ticks_now) > 20:
@@ -158,7 +164,7 @@ def run():
         if wait > 0:
             if time.ticks_diff(draw_last, ticks_now) > 16:
                 draw_last = ticks_now
-                display._np.write()
+                display._write()
             else:
                 if wait > 10:
                     wait = 10
