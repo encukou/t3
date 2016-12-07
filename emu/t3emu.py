@@ -153,7 +153,8 @@ def do_fork(micropython_binary, delay=0):
         time.sleep(delay)
         print('# Fork started')
         os.execvpe('micropython', ['micropython', '-m', 'main'],
-                {'MICROPYPATH': '.:../emu'})
+                {'MICROPYPATH': '.:../emu',
+                 'PATH': os.environ.get('PATH', '/usr/bin')})
 
     os.close(in_read)
     os.close(out_write)
