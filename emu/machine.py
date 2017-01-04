@@ -74,7 +74,7 @@ def _update_buttons():
     rd = sys.stdin.read(256)
     if rd is not None:
         _stdin_line += rd
-        if '\n' in _stdin_line:
+        while '\n' in _stdin_line:
             cmd, sep, _stdin_line = _stdin_line.partition('\n')
             print('>', cmd)
             if cmd.startswith('+'):
