@@ -21,6 +21,8 @@ TOP_L = MAIN_L - BOTTOM_L;
 
 HOOK_POSITIONS = [-30, 0, 30];
 
+BUTTON_HOLE_TOLERANCE = 0.2;
+
 module main_footprint (h, offset=0) {
     o = offset;
     o2 = o * sqrt(2);
@@ -246,7 +248,10 @@ module t3_face () {
                 }
                 // Button Holes
                 buttons_transform () {
-                    translate ([-0.25, -0.25, 0]) cube ([6.5, 6.5, 100]);
+                    tol = BUTTON_HOLE_TOLERANCE;
+                    translate ([-0.25-tol, -0.25-tol, 0]) {
+                        cube ([6.5 + tol*2, 6.5 + tol*2, 100]);
+                    }
                     translate ([0, 0, 2]) button_leg_holes ();
                 }
                 // Screen Hole
