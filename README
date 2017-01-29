@@ -43,14 +43,14 @@ Players take turns putting their colors on the board.
 The first on to get 3 in a row – horizontally, vertically, or diagonally –
 wins. In case of tie, the game is repeated.
 
-## The emulator
+## The simulator
 
-A rudimentary emulator is included to aid development and to run games without
+A rudimentary simulator is included to aid development and to run games without
 a physical console.
-The emulator is not accurate--it runs with the speed and memory of the host
+The simulator is not accurate--it runs with the speed and memory of the host
 computer--but it's useful for validating high-level logic.
 
-To run the emulator, you will need Python 3.5+ *and* MicroPython, plus the
+To run the simulator, you will need Python 3.5+ *and* MicroPython, plus the
 Pyglet and Click libraries. On Fedora, you can install the prerequisites with:
 
     sudo dnf install python3 micropython python3-pyglet python3-click
@@ -58,11 +58,11 @@ Pyglet and Click libraries. On Fedora, you can install the prerequisites with:
 (Please contribute instructions for other systems.
 Note: the emulator won't work on Windows without major changes.)
 
-Run the included `t3` script to launch the emulator.
+Run the included `t3` script to launch the simulator.
 Control it with arrow keys, and Z/X for the A/B buttons.
 To run a particular game directly, pass its name as a command-line argument.
 
-The emulator doesn't currently emit sound.
+The simulator doesn't currently emit sound.
 
 ## API
 
