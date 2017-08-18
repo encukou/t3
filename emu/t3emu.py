@@ -121,6 +121,31 @@ def _dim(dimension, other):
         return MAX // 3, start
 
 
+class SoundPlayer:
+    def __init__(self):
+        self._player = None
+        self._frequency = 0
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        self.set_frequency(0)
+
+    def set_frequency(self, freq):
+        if freq == self._frequency:
+            return
+        if self._player:
+            self._player.terminate()
+            self._player = None
+        if freq:
+            self._player = subprocess.Popen([
+                'speaker-test', '-t', 'sine', '-l0', '-s1', '-p36000',
+                '-f', str(freq),
+            ])
+        self._frequency = freq
+
+
 end_loop = False
 
 def tick(dt):
@@ -163,23 +188,28 @@ def do_fork(micropython_binary, delay=0):
 
 def run_main_factory(micropython_binary):
     def run_main():
-        while True:
-            try:
-                line = out_file.readline()
-            except BrokenPipeError:
-                line = b''
-            if line == b'':
-                if os.path.exists('selected-game'):
-                    print('# Resetting')
-                    do_fork(micropython_binary=micropython_binary, delay=1)
-                    continue
+        with SoundPlayer() as sound:
+            while True:
+                try:
+                    line = out_file.readline()
+                except BrokenPipeError:
+                    line = b''
+                if line == b'':
+                    if os.path.exists('selected-game'):
+                        print('# Resetting')
+                        do_fork(micropython_binary=micropython_binary, delay=1)
+                        continue
+                    else:
+                        pyglet.app.exit()
+                        break
+                if line.startswith(b'* '):
+                    _strip[:] = ast.literal_eval(line[2:].decode('ascii'))
+                elif line.startswith(b'@ '):
+                    _at, freq, duty = line.strip().split()
+                    print('!', freq, duty)
+                    sound.set_frequency(int(freq))
                 else:
-                    pyglet.app.exit()
-                    break
-            if line.startswith(b'* '):
-                _strip[:] = ast.literal_eval(line[2:].decode('ascii'))
-            else:
-                print('*', line)
+                    print('*', line)
     return run_main
 
 
